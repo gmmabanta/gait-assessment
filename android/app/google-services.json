@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1006199746331",
+    "project_id": "cnl-190",
+    "storage_bucket": "cnl-190.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006199746331:android:60b450c16af5d970636dbe",
+        "android_client_info": {
+          "package_name": "com.maemabanta.gait_assessment"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1006199746331-fdqep38f25hoonjifrvtm03dnsq3m516.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhypRumTwBBDh0tQmi3iiMqbcpU8lfFSE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006199746331-fdqep38f25hoonjifrvtm03dnsq3m516.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
