@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'mainscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gait_assessment/main.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -18,12 +16,27 @@ class _LoginScreenState extends State<LoginScreen> {
   String _email;
   String _password;
 
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  user_id(){
+    final User user = auth.currentUser;
+    final uid = user.uid;
+    print(uid);
+    return uid;
+  }
+
   Future<void> _createUser() async{
     try{
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _email,
           password: _password
       );
+      Map <String,dynamic> user_data = {
+        "email": _email,
+        "user_id": user_id(),
+        "role": "patient",
+      };
+
+      FirebaseFirestore.instance.collection("users").doc(user_id()).set(user_data);
       print("User: $userCredential");
     } on FirebaseAuthException catch(e) {
       print("Error: ${e}");

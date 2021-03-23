@@ -1,11 +1,12 @@
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
 import 'package:gait_assessment/training_screen.dart';
 import 'package:gait_assessment/schedule_screen.dart';
 import 'package:gait_assessment/trainingresults_screen.dart';
-import 'package:gait_assessment/calendar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MainScreen extends StatelessWidget {
   @override
@@ -13,111 +14,188 @@ class MainScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xFFFF1EEEE),
       body: Container(
+
         margin: EdgeInsets.all(20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+
 
           children: <Widget>[
             Container(
+              padding: EdgeInsets.only(left: 7),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+
                 children: <Widget>[
-                  Text("Hello Patient",
-                      textAlign: TextAlign.start,
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold,)
+                  Container(
+                    padding: EdgeInsets.all(40)
+                  ),
+                  Text("Hello!",
+                      style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold,)
                   ),
                   Text("What are you up to today?",
-                    style: TextStyle(fontSize: 20, color: Color(0xFFFB1AEAE)),
+                    style: TextStyle(fontSize: 15, color: Color(0xFFFB1AEAE)),
                   ),
+                  /*Container(
+                      padding: EdgeInsets.all(15)
+                  ),*/
+                  MaterialButton(
+                    onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                    },
+                    child: Text("Sign Out"),
+                  ),
+
                 ],
               ),
             ),
 
             Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
+
               children: <Widget>[
-                GestureDetector(
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 20),
-                    padding: EdgeInsets.all(30),
-                    width: 400,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                    ),
-                    child: Text("Start Training",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.teal[300],
-                          fontWeight: FontWeight.w500,
-                          fontSize: 20
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+
+                  children: <Widget>[
+                    GestureDetector(
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 15, right: 15),
+                        padding: EdgeInsets.all(20),
+                        height: 190,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(18)),
+                        ),
+                        child: Align(
+                          alignment: FractionalOffset.bottomLeft,
+                          child: Text("Start Training",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                color: Colors.teal[300],
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20
+                            ),
+                          ),
+                        )
                       ),
+
+
+                      onTap: () {
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context)=>TrainingProgress()),
+                        );
+                      },
                     ),
-                  ),
+
+                    GestureDetector(
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 15),
+                        padding: EdgeInsets.all(20),
+                        height: 190,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(18)),
+                        ),
+                        child: Align(
+                          alignment: FractionalOffset.bottomLeft,
+                          child: Text("View Training Results",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                color: Colors.teal[300],
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20
+                            ),
+                          ),
+                        ),
+
+                      ),
+
+                      onTap: () {
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context)=>TrainingScreen()),
+                        );
+                      },
+                    ),
 
 
-                  onTap: () {
-                    Navigator.push(context,
-                      MaterialPageRoute(builder: (context)=>TrainingScreen()),
-                    );
-                  },
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    GestureDetector(
+                      child: Container(
+                        margin: EdgeInsets.only(right: 15, bottom: 15),
+                        padding: EdgeInsets.all(20),
+                        height: 190,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(18)),
+                        ),
+                        child: Align(
+                          alignment: FractionalOffset.bottomLeft,
+                          child: Text("Schedule",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                color: Colors.teal[300],
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20
+                            ),
+                          ),
+                        ),
+
+
+                      ),
+
+
+                      onTap: () {
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context)=>SchedulePage()),
+                        );
+                      },
+                    ),
+                    GestureDetector(
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 15),
+                        padding: EdgeInsets.all(20),
+                        height: 190,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(18)),
+                        ),
+                        child: Align(
+                          alignment: FractionalOffset.bottomRight,
+                          child: Text("Past Training Results",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                color: Colors.teal[300],
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20
+                            ),
+                          ),
+                        ),
+
+
+                      ),
+
+
+                      onTap: () {
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context)=>TrainingResultsScreen()),
+                        );
+                      },
+                    ),
+                  ],
                 ),
 
-                GestureDetector(
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 20),
-                    padding: EdgeInsets.all(30),
-                    width: 400,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                    ),
-                    child: Text("Schedule",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.teal[300],
-                          fontWeight: FontWeight.w500,
-                          fontSize: 20
-                      ),
-                    ),
-                  ),
 
 
-                  onTap: () {
-                    Navigator.push(context,
-                      MaterialPageRoute(builder: (context)=>SchedulePage()),
-                    );
-                  },
-                ),
-                GestureDetector(
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 20),
-                    padding: EdgeInsets.all(30),
-                    width: 400,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                    ),
-                    child: Text("Past Training Results",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.teal[300],
-                          fontWeight: FontWeight.w500,
-                          fontSize: 20
-                      ),
-                    ),
-                  ),
 
-
-                  onTap: () {
-                    Navigator.push(context,
-                      MaterialPageRoute(builder: (context)=>TrainingResultsScreen()),
-                    );
-                  },
-                ),
               ],
             )
           ],
