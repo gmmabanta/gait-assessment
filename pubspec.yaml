@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  #Bluetooth
+  flutter_bluetooth_serial: ^0.2.2
 
   #Calendar Functions
   table_calendar: ^2.3.3

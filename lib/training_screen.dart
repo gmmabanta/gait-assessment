@@ -6,6 +6,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:date_time_format/date_time_format.dart';
 import 'dart:math';
+import 'package:gait_assessment/bluetooth.dart';
 
 Random random = new Random();
 
@@ -243,8 +244,10 @@ class _TrainingProgressState extends State<TrainingProgress> {
           IconButton(
               icon: Icon(Icons.settings),
               onPressed: () { Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => SettingsScreen()),
-                );
+                  //MaterialPageRoute(builder: (context) => SettingsScreen()),
+                  MaterialPageRoute(builder: (context)=>BluetoothApp()),
+
+              );
               }
           )
         ],
