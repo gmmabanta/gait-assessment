@@ -86,9 +86,9 @@ class MainScreen extends StatelessWidget {
 
                       onTap: () {
                         Navigator.push(context,
-                          //MaterialPageRoute(builder: (context)=>TrainingProgress()),
+                          MaterialPageRoute(builder: (context)=>TrainingProgress()),
                           //MaterialPageRoute(builder: (context)=>BluetoothApp()),
-                          MaterialPageRoute(builder: (context)=>LocalAudio()),
+                          //MaterialPageRoute(builder: (context)=>LocalAudio()),
 
                         );
                       },

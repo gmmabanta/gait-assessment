@@ -7,6 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:date_time_format/date_time_format.dart';
 import 'dart:math';
 import 'package:gait_assessment/bluetooth.dart';
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
+
 
 Random random = new Random();
 
@@ -60,8 +63,6 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  //  TextEditingController sampledata1 = new TextEditingController();
-  //  TextEditingController sampledata2 = new TextEditingController();
   int total_steps = random.nextInt(100), correct_steps = random.nextInt(70), wrong_steps = random.nextInt(30);
   int cadence = random.nextInt(100), ave_step_time = random.nextInt(60);
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -229,6 +230,35 @@ class TrainingProgress extends StatefulWidget {
 }
 
 class _TrainingProgressState extends State<TrainingProgress> {
+  Duration _duration = Duration();
+  Duration _position = Duration();
+  AudioPlayer advancedPlayer;
+  AudioCache audioCache;
+
+  @override
+  void initState(){
+    super.initState();
+    initPlayer();
+  }
+
+  void initPlayer(){
+    advancedPlayer = AudioPlayer();
+    audioCache = AudioCache(fixedPlayer: advancedPlayer);
+
+    advancedPlayer.durationHandler = (d) => setState((){
+      _duration = d;
+    });
+
+    advancedPlayer.positionHandler = (p) => setState((){
+      _position = p;
+    });
+  }
+
+  String localFilePath;
+
+
+  bool _play = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -243,12 +273,12 @@ class _TrainingProgressState extends State<TrainingProgress> {
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.settings),
-              onPressed: () { Navigator.push(context,
-                  //MaterialPageRoute(builder: (context) => SettingsScreen()),
-                  MaterialPageRoute(builder: (context)=>BluetoothApp()),
-
+              onPressed: () {
+                Navigator.push(context,
+                //MaterialPageRoute(builder: (context) => SettingsScreen()),
+                MaterialPageRoute(builder: (context)=>BluetoothApp()),
               );
-              }
+            }
           )
         ],
         backgroundColor: Colors.transparent,
@@ -262,35 +292,62 @@ class _TrainingProgressState extends State<TrainingProgress> {
         children: <Widget>[
           Container(
             padding: EdgeInsets.only(left:60, right:60, bottom: 40),
-            child: SfRadialGauge(
-              axes: <RadialAxis>[
-                RadialAxis(
-                  minimum: 0,
-                  maximum: 100,
-                  showLabels: false,
-                  showTicks: false,
-                  startAngle: 270,
-                  endAngle: 270,
-                  axisLineStyle: AxisLineStyle(
-                    thickness: 0.15,
-                    cornerStyle: CornerStyle.bothFlat,
-                    color: Color(0xFFBCFD8DC),
-                    thicknessUnit: GaugeSizeUnit.factor,
-                  ),
-                  pointers: <GaugePointer>[
-                    RangePointer(
-                        value: 50,
+            child: Stack(
+              children: <Widget>[
+                SfRadialGauge(
+                  axes: <RadialAxis>[
+                    RadialAxis(
+                      minimum: 0,
+                      maximum: _duration.inSeconds.toDouble(),
+                      showLabels: false,
+                      showTicks: false,
+                      startAngle: 270,
+                      endAngle: 270,
+                      axisLineStyle: AxisLineStyle(
+                        thickness: 0.15,
                         cornerStyle: CornerStyle.bothFlat,
-                        width: 0.15,
-                        sizeUnit: GaugeSizeUnit.factor,
-                        color: Colors.teal[300]
-                    )
+                        color: Color(0xFFBCFD8DC),
+                        thicknessUnit: GaugeSizeUnit.factor,
+                      ),
+                      pointers: <GaugePointer>[
+                        RangePointer(
+                            value: _position.inSeconds.toDouble(),
+                            cornerStyle: CornerStyle.bothFlat,
+                            width: 0.15,
+                            sizeUnit: GaugeSizeUnit.factor,
+                            color: Colors.teal[300]
+                        )
+                      ],
+                    ),
                   ],
+
+                ),
+                Center(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 107),
+                    child: IconButton(
+                      onPressed: (){
+                        setState(() {
+                          if(_play){
+                            _play = false;
+                            audioCache.play('metronome_test.mp3');
+                          } else {
+                            _play = true;
+                            advancedPlayer.pause();
+                          }
+                        });
+                      },
+                      icon: Icon(_play? Icons.play_arrow_rounded : Icons.pause_rounded),
+                      color: Colors.teal[300],
+                      iconSize: 120,
+                    ),
+                  )
                 ),
 
-              ],
 
-            ),
+              ],
+            )
+
 
           ),
           GestureDetector(
@@ -314,7 +371,6 @@ class _TrainingProgressState extends State<TrainingProgress> {
             onTap: () {
             },
           ),
-
         ],
 
       ),
@@ -323,3 +379,4 @@ class _TrainingProgressState extends State<TrainingProgress> {
 }
 
 
+/* Music Player */
