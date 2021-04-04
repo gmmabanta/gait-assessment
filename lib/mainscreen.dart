@@ -8,6 +8,7 @@ import 'package:gait_assessment/schedule_screen.dart';
 import 'package:gait_assessment/trainingresults_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gait_assessment/bluetooth.dart';
+import 'package:gait_assessment/music_player.dart';
 
 class MainScreen extends StatelessWidget {
   @override
@@ -85,8 +86,10 @@ class MainScreen extends StatelessWidget {
 
                       onTap: () {
                         Navigator.push(context,
-                          MaterialPageRoute(builder: (context)=>TrainingProgress()),
+                          //MaterialPageRoute(builder: (context)=>TrainingProgress()),
                           //MaterialPageRoute(builder: (context)=>BluetoothApp()),
+                          MaterialPageRoute(builder: (context)=>LocalAudio()),
+
                         );
                       },
                     ),
