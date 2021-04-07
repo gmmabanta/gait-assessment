@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:gait_assessment/BluetoothDeviceListEntry.dart';
+import 'package:gait_assessment/bt_dataentry.dart';
+import 'package:gait_assessment/SelectBondedDevicePage.dart';
 
 class BluetoothApp extends StatefulWidget {
   @override
@@ -19,7 +21,7 @@ class _BluetoothAppState extends State<BluetoothApp> with WidgetsBindingObserver
     WidgetsBinding.instance.addObserver(this);
     _getBTState();
     _stateChangeListener();
-    _listBondedDevices();
+    //_listBondedDevices();
   }
 
   @override
@@ -30,7 +32,7 @@ class _BluetoothAppState extends State<BluetoothApp> with WidgetsBindingObserver
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state){
-    if(state == 0){
+    if(state.index == 0){
       //resume
       if(_bluetoothState.isEnabled){
         _listBondedDevices();
@@ -77,6 +79,15 @@ class _BluetoothAppState extends State<BluetoothApp> with WidgetsBindingObserver
     });
   }
 
+  void _startChat(BuildContext context, BluetoothDevice server) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return ChatPage(server: server);
+        },
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,6 +119,8 @@ class _BluetoothAppState extends State<BluetoothApp> with WidgetsBindingObserver
               trailing: RaisedButton(
                 child: Text("Settings"),
                 onPressed: (){
+                  //opens Bluetooth Settings on the app
+                  //used for pairing with devices
                   FlutterBluetoothSerial.instance.openSettings();
                 },
               ),
@@ -121,6 +134,28 @@ class _BluetoothAppState extends State<BluetoothApp> with WidgetsBindingObserver
                       print("Item");
                     },
                 )).toList(),
+              ),
+            ),
+            ListTile(
+              title: RaisedButton(
+                child: const Text('Connect to paired device to chat'),
+                onPressed: () async {
+                  final BluetoothDevice selectedDevice =
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return SelectBondedDevicePage(checkAvailability: false);
+                      },
+                    ),
+                  );
+
+                  if (selectedDevice != null) {
+                    print('Connect -> selected ' + selectedDevice.address);
+                    _startChat(context, selectedDevice);
+                  } else {
+                    print('Connect -> no device selected');
+                  }
+                },
               ),
             ),
           ],

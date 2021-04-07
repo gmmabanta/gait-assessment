@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gait_assessment/barchart.dart';
 import 'package:gait_assessment/linegraph.dart';
 
 class TrainingResultsScreen extends StatefulWidget {
@@ -62,6 +61,7 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
                       margin: EdgeInsets.all(5),
                       child: Column(
                         children: <Widget>[
+                          /*
                           Container(
                             height: _heightTP,
                             padding: EdgeInsets.all(3),
@@ -108,7 +108,7 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
                                 )
                               ],
                             )
-                          ),
+                          ),*/
                           SizedBox(height: 15),
                           Container(
                               padding: EdgeInsets.all(3),
@@ -159,6 +159,7 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
                               )
                           ),
                           SizedBox(height: 15),
+                          /*
                           Container(
                               margin: EdgeInsets.only(bottom: 20),
                               padding: EdgeInsets.all(6),
@@ -205,6 +206,8 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
 
 
                           ),
+
+                           */
                         ],
                       ),
 

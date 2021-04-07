@@ -6,22 +6,28 @@ import 'package:flutter/widgets.dart';
 import 'package:gait_assessment/training_screen.dart';
 import 'package:gait_assessment/schedule_screen.dart';
 import 'package:gait_assessment/trainingresults_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gait_assessment/bluetooth.dart';
-import 'package:gait_assessment/music_player.dart';
+
+final FirebaseAuth auth = FirebaseAuth.instance;
+final User user = auth.currentUser;
+final uid = user.uid;
+
+String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+var role = capitalize("patient");
+
 
 class MainScreen extends StatelessWidget {
+  double _menuHeight = 240;
+  double _menuWidth = 175;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFF1EEEE),
       body: Container(
-
         margin: EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-
-
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Container(
               padding: EdgeInsets.only(left: 7),
@@ -32,7 +38,7 @@ class MainScreen extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.all(40)
                   ),
-                  Text("Hello!",
+                  Text("Hello ${role}!",
                       style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold,)
                   ),
                   Text("What are you up to today?",
@@ -47,14 +53,12 @@ class MainScreen extends StatelessWidget {
                     },
                     child: Text("Sign Out"),
                   ),
-
                 ],
               ),
             ),
 
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -64,8 +68,8 @@ class MainScreen extends StatelessWidget {
                       child: Container(
                         margin: EdgeInsets.only(bottom: 15, right: 15),
                         padding: EdgeInsets.all(20),
-                        height: 190,
-                        width: 150,
+                        height: _menuHeight,
+                        width: _menuWidth,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(18)),
@@ -98,8 +102,8 @@ class MainScreen extends StatelessWidget {
                       child: Container(
                         margin: EdgeInsets.only(bottom: 15),
                         padding: EdgeInsets.all(20),
-                        height: 190,
-                        width: 150,
+                        height: _menuHeight,
+                        width: _menuWidth,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(18)),
@@ -120,7 +124,7 @@ class MainScreen extends StatelessWidget {
 
                       onTap: () {
                         Navigator.push(context,
-                          MaterialPageRoute(builder: (context)=>TrainingScreen()),
+                          MaterialPageRoute(builder: (context)=>ListTraining()),
                         );
                       },
                     ),
@@ -135,8 +139,8 @@ class MainScreen extends StatelessWidget {
                       child: Container(
                         margin: EdgeInsets.only(right: 15, bottom: 15),
                         padding: EdgeInsets.all(20),
-                        height: 190,
-                        width: 150,
+                        height: _menuHeight,
+                        width: _menuWidth,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(18)),
@@ -167,15 +171,15 @@ class MainScreen extends StatelessWidget {
                       child: Container(
                         margin: EdgeInsets.only(bottom: 15),
                         padding: EdgeInsets.all(20),
-                        height: 190,
-                        width: 150,
+                        height: _menuHeight,
+                        width: _menuWidth,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(18)),
                         ),
                         child: Align(
-                          alignment: FractionalOffset.bottomRight,
-                          child: Text("Past Training Results",
+                          alignment: FractionalOffset.bottomLeft,
+                          child: Text("Summary",
                             textAlign: TextAlign.left,
                             style: TextStyle(
                                 color: Colors.teal[300],

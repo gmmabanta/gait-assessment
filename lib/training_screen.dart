@@ -10,8 +10,14 @@ import 'package:gait_assessment/bluetooth.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-
 Random random = new Random();
+final FirebaseAuth auth = FirebaseAuth.instance;
+user_id(){
+  final User user = auth.currentUser;
+  final uid = user.uid;
+  print(uid);
+  return uid;
+}
 
 class TrainingScreen extends StatelessWidget {
   @override
@@ -65,13 +71,6 @@ class ListPage extends StatefulWidget {
 class _ListPageState extends State<ListPage> {
   int total_steps = random.nextInt(100), correct_steps = random.nextInt(70), wrong_steps = random.nextInt(30);
   int cadence = random.nextInt(100), ave_step_time = random.nextInt(60);
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  user_id(){
-    final User user = auth.currentUser;
-    final uid = user.uid;
-    print(uid);
-    return uid;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +94,7 @@ class _ListPageState extends State<ListPage> {
             ),
              */
             SizedBox(height: 10),
-            FlatButton(
+            /*FlatButton(
               onPressed: (){
                 Map <String,dynamic> training_data= {
                   "date": DateTime.now(),
@@ -110,7 +109,7 @@ class _ListPageState extends State<ListPage> {
               },
               child: Text("Submit"),
               color: Colors.blueAccent,
-            ),
+            ),*/
             FlatButton(
               onPressed: () async{
                 Navigator.push(context, MaterialPageRoute(builder: (BuildContext context)=> ListTraining() ));
@@ -132,13 +131,6 @@ class ListTraining extends StatefulWidget {
 }
 
 class _ListTrainingState extends State<ListTraining> {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  user_id(){
-    final User user = auth.currentUser;
-    final uid = user.uid;
-    print(uid);
-    return uid;
-  }
 
   Future getData() async {
     QuerySnapshot qn = await FirebaseFirestore.instance.collection("/users/" +user_id() +"/training/").get();
@@ -230,10 +222,14 @@ class TrainingProgress extends StatefulWidget {
 }
 
 class _TrainingProgressState extends State<TrainingProgress> {
-  Duration _duration = Duration();
+  Duration _duration = Duration(seconds: 1);
   Duration _position = Duration();
   AudioPlayer advancedPlayer;
   AudioCache audioCache;
+
+  int total_steps = random.nextInt(100), correct_steps = random.nextInt(70), wrong_steps = random.nextInt(30);
+  int cadence = random.nextInt(100), ave_step_time = random.nextInt(60);
+
 
   @override
   void initState(){
@@ -256,8 +252,17 @@ class _TrainingProgressState extends State<TrainingProgress> {
 
   String localFilePath;
 
+  bool _endTraining = false;
+  signalEndTraining(){
+    if(_duration.inSeconds.toDouble() == _position.inSeconds.toDouble()){
+      _endTraining = true;
+    } else{
+      _endTraining = false;
+    }
+    return _position.inSeconds.toDouble();
+  }
 
-  bool _play = false;
+  bool _play = true;
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +316,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
                       ),
                       pointers: <GaugePointer>[
                         RangePointer(
-                            value: _position.inSeconds.toDouble(),
+                            value: signalEndTraining(),
                             cornerStyle: CornerStyle.bothFlat,
                             width: 0.15,
                             sizeUnit: GaugeSizeUnit.factor,
@@ -326,18 +331,19 @@ class _TrainingProgressState extends State<TrainingProgress> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 107),
                     child: IconButton(
+                      icon: Icon(_play? Icons.play_arrow_rounded : Icons.pause_rounded),
                       onPressed: (){
                         setState(() {
                           if(_play){
-                            _play = false;
                             audioCache.play('metronome_test.mp3');
+                            _play = false;
                           } else {
-                            _play = true;
                             advancedPlayer.pause();
+                            _play = true;
                           }
                         });
                       },
-                      icon: Icon(_play? Icons.play_arrow_rounded : Icons.pause_rounded),
+                      //icon: Icon(_play? Icons.play_arrow_rounded : Icons.pause_rounded),
                       color: Colors.teal[300],
                       iconSize: 120,
                     ),
@@ -347,18 +353,16 @@ class _TrainingProgressState extends State<TrainingProgress> {
 
               ],
             )
-
-
           ),
           GestureDetector(
             child: Container(
               margin: EdgeInsets.only(left:60, right:60),
               padding: EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
               decoration: BoxDecoration(
-                color: Color(0xFFBCFD8DC),
+                color: _endTraining? Colors.teal[300] : Color(0xFFBCFD8DC),
                 borderRadius: BorderRadius.all(Radius.circular(80)),
               ),
-              child: Text("Start Training",
+              child: Text("End Training",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
@@ -369,6 +373,23 @@ class _TrainingProgressState extends State<TrainingProgress> {
             ),
 
             onTap: () {
+              if(_endTraining){
+                Map <String,dynamic> training_data= {
+                  "date": DateTime.now(),
+                  "user_id": user_id(),
+                  "total_steps":total_steps.toInt(),
+                  "correct_steps":correct_steps.toInt(),
+                  "wrong_steps":wrong_steps.toInt(),
+                  "cadence":cadence.toInt(),
+                  "ave_step_time":ave_step_time.toInt(),
+                };
+                FirebaseFirestore.instance.collection("users").doc(user_id()).collection("training").add(training_data);
+                Navigator.of(context).pop();
+              } else {
+                //do nothing
+              }
+              //@TODO: add function to upload all data to Firebase
+
             },
           ),
         ],
@@ -377,6 +398,3 @@ class _TrainingProgressState extends State<TrainingProgress> {
     );
   }
 }
-
-
-/* Music Player */

@@ -10,11 +10,17 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-
+  //TextEditingController _email = TextEditingController();
+  //TextEditingController _password = TextEditingController();
+  //TextEditingController _password1 = TextEditingController();
+  //TextEditingController _fname = TextEditingController();
+  //TextEditingController _lname = TextEditingController();
   String _email;
   String _password;
+  String _password1;
+  String _fname;
+  String _lname;
+
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   user_id(){
@@ -32,6 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       Map <String,dynamic> user_data = {
         "email": _email,
+        "first_name": _fname,
+        "last_name": _lname,
         "user_id": user_id(),
         "role": "patient",
       };
@@ -69,279 +77,254 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Color(0xFFFF1EEEE),
-        body: Container(
-
-          margin: EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Text("Login",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.teal[300],
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20
-                ),
-              ),
-              Container(
-                  padding: EdgeInsets.all(30),
-                  width: 400,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text("Login",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 20
-                        ),
-                      ),
-                      /*
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: TextField(
-                          controller: nameController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Username',
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: TextField(
-                          controller: passwordController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Password',
-                          ),
-                        ),
-                      ),
-                      */
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: TextField(
-                          onChanged: (value) {
-                            _email = value;
-                          },
-                          decoration: InputDecoration(
-                              hintText: "Email"
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: TextField(
-                          onChanged: (value) {
-                          _password = value;
-                          },
-                          decoration: InputDecoration(
-                              hintText: "Password"
-                          ),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          GestureDetector(
-                            child: Container(
-                                padding: EdgeInsets.all(10),
-                                width: 80,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                                    border: Border.all(color: Colors.teal[300])
-
-                                ),
-                                child: Text("Sign up",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.teal[300]
-                                  ),
-                                )
-                            ),
-                            onTap: _createUser
-                          ),
-
-                          GestureDetector(
-                            child: Container(
-                                padding: EdgeInsets.all(10),
-                                width: 80,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.teal[300],
-                                  borderRadius: BorderRadius.all(Radius.circular(30)),
-                                ),
-                                child: Text("Login",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white
-                                  ),
-                                )
-                            ),
-                            onTap: _login
-                          ),
-
-                        ],
-
-                      ),
-
-                    ],
-                  )
-
-              ),
-
-
-            ],
-
-          ),
-        )
-
-    );
-  }
-}
-
-
-class SignUpScreen extends StatefulWidget {
-  @override
-  _SignUpScreenState createState() => _SignUpScreenState();
-}
-
-class _SignUpScreenState extends State<SignUpScreen> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  var _pageState = 0;
+  Color _backgroundColor = Color(0xFFFF1EEEE);
+  Color _pageHeader = Colors.teal[300];
+  var _headerText;
+  var _height;
+  var _isObscurePW1 = true;
+  var _isObscurePW2 = true;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Color(0xFFFF1EEEE),
-        body: Container(
+    switch(_pageState){
+      case 0:
+        _backgroundColor = Color(0xFFFF1EEEE);
+        _pageHeader = Colors.teal[300];
+        _headerText = "Login";
+        _height = MediaQuery.of(context).size.height*0.45;
+        break;
+      default:
+        _backgroundColor = Colors.teal[300];
+        _pageHeader = Colors.white;
+        _headerText = "Sign Up";
+        _height = MediaQuery.of(context).size.height*0.68;
+        break;
+    }
 
-          margin: EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Text("Sign Up",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.teal[300],
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20
-                ),
-              ),
-              Container(
-                  padding: EdgeInsets.all(30),
-                  width: 400,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
+    return Scaffold(
+        backgroundColor: _backgroundColor,
+        body: SingleChildScrollView(
+          child: Container(
+            margin: EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(height:80),
+                Text(_headerText,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: _pageHeader,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 20
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text("Sign up",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 20
-                        ),
+                ),
+                SizedBox(height: 20,),
+                Center(
+                  child: Container(
+                      padding: EdgeInsets.all(30),
+                      height: _height,
+                      width: MediaQuery.of(context).size.width*0.88,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(18)),
                       ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: TextField(
-                          controller: nameController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Username',
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: TextField(
-                          controller: passwordController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Password',
-                          ),
-                        ),
-                      ),
-                      Row(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          GestureDetector(
-                            child: Container(
-                                padding: EdgeInsets.all(10),
-                                width: 80,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                                    border: Border.all(color: Colors.teal[300])
-
-                                ),
-                                child: Text("Login",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.teal[300]
-                                  ),
-                                )
+                          Text(_headerText,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 20
                             ),
-                            onTap: () {
-                              Navigator.push(context,
-                                MaterialPageRoute(builder: (context)=>MainScreen()),
-                              );
+                          ),
+                          Visibility(
+                            visible: (_pageState == 1) ? true: false,
+                            child: TextFormField(
+                              keyboardType: TextInputType.text,
+                              onChanged: (value) {
+                                setState(() {
+                                  _fname = value;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.account_box, color: Colors.teal[300],),
+                                  labelText: 'First Name'
+                              ),
+                            ),
+                          ),
+                          Visibility(
+                            visible: (_pageState == 1) ? true: false,
+                            child: TextFormField(
+                              //controller: _lname,
+                              keyboardType: TextInputType.text,
+                              onChanged: (value) {
+                                setState(() {
+                                  _lname = value;
+
+                                });
+                              },
+                              decoration: InputDecoration(
+                                  prefixIcon: Icon(Icons.account_box, color: Colors.teal[300],),
+                                  labelText: 'Last Name'
+                              ),
+                            ),
+                          ),
+                          TextFormField(
+                            //controller: _email,
+                            keyboardType: TextInputType.emailAddress,
+                            onChanged: (value) {
+                              setState(() {
+                                _email = value;
+                              });
                             },
+                            decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.email_rounded, color: Colors.teal[300],),
+                                labelText: 'Email'
+                            ),
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.text,
+                            onChanged: (value) {
+                              setState(() {
+                                _password = value;
+                              });
+                            },
+                            obscureText: _isObscurePW1,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.lock_rounded, color: Colors.teal[300],),
+                              labelText: 'Password',
+                              suffixIcon: IconButton(icon: Icon(
+                                  _isObscurePW1? Icons.visibility : Icons.visibility_off),
+                                onPressed: (){
+                                  setState(() {
+                                    _isObscurePW1 = !_isObscurePW1;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          Visibility(
+                            visible: (_pageState == 1) ? true: false,
+                            child: TextFormField(
+                              //controller: _password1,
+                              keyboardType: TextInputType.text,
+                              onChanged: (value) {
+                                setState(() {
+                                  _password1 = value;
+
+                                });
+                              },
+                              obscureText: _isObscurePW2,
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.lock_rounded, color: Colors.teal[300],),
+                                labelText: 'Confirm Password',
+                                suffixIcon: IconButton(icon: Icon(
+                                    _isObscurePW2? Icons.visibility : Icons.visibility_off),
+                                  onPressed: (){
+                                    setState(() {
+                                      _isObscurePW2 = !_isObscurePW2;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
                           ),
 
-                          GestureDetector(
-                            child: Container(
-                                padding: EdgeInsets.all(10),
-                                width: 80,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.teal[300],
-                                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                          SizedBox(height: 2,),
+                          Visibility(
+                            visible: (_pageState == 0) ? true : false,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                ElevatedButton(
+                                    onPressed: (){
+                                      setState(() {
+                                        _pageState = 1;
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      shape: new RoundedRectangleBorder(
+                                          borderRadius: new BorderRadius.circular(30.0)),
+                                      side: BorderSide(color: Colors.teal[300], width: 1.5),
+                                      primary: Colors.white,
+                                      elevation: 1.5,
+                                      minimumSize: Size(120, 40),
+                                    ),
+                                    child: Text(
+                                      "Sign up",
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.teal[300]),
+                                    )
                                 ),
-                                child: Text("Sign up",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white
-                                  ),
-                                )
+                                ElevatedButton(
+                                    onPressed: _login,
+                                    style: ElevatedButton.styleFrom(
+                                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0),),
+                                        primary: Colors.teal[300],
+                                        elevation: 1.5,
+                                        minimumSize: Size(120, 40)
+                                    ),
+                                    child: Text(
+                                      "Login",
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                                    )
+                                ),
+                              ],
                             ),
-                            onTap: () {
-                              Navigator.push(context,
-                                MaterialPageRoute(builder: (context)=>LoginScreen()),
-                              );
-                            },
                           ),
+                          Visibility(
+                            visible: (_pageState == 1) ? true: false,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                ElevatedButton(
+                                    onPressed: (){
+                                      setState(() {
+                                        _pageState = 0;
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      shape: new RoundedRectangleBorder(
+                                          borderRadius: new BorderRadius.circular(30.0)),
+                                      side: BorderSide(color: Colors.teal[300], width: 1.5),
+                                      primary: Colors.white,
+                                      elevation: 1.5,
+                                      minimumSize: Size(120, 40),
+                                    ),
+                                    child: Text(
+                                      "Login",
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.teal[300]),
+                                    )
+                                ),
+                                ElevatedButton(
+                                    onPressed: _createUser,
+                                    style: ElevatedButton.styleFrom(
+                                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0),),
+                                        primary: Colors.teal[300],
+                                        elevation: 1.5,
+                                        minimumSize: Size(120, 40)
+                                    ),
+                                    child: Text(
+                                      "Sign up",
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                                    )
+                                ),
+                              ],
 
+                            ),
+                          ),
                         ],
+                      )
 
-                      ),
-
-                    ],
-                  )
-
-              ),
+                  ),
+                ),
 
 
-            ],
+              ],
 
+            ),
           ),
-
-
-
         )
-
     );
   }
 }
