@@ -1016,4 +1016,3 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
     );
   }
 }
-6
