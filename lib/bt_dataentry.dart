@@ -4,6 +4,16 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
+class temporalParameters {
+  int ave_step_time;
+  int cadence;
+  int correct_steps;
+  int wrong_steps;
+  int total_steps;
+
+  temporalParameters(this.ave_step_time, this.cadence, this.total_steps, this.correct_steps, this.wrong_steps);
+}
+
 class ChatPage extends StatefulWidget {
   final BluetoothDevice server;
 
@@ -110,9 +120,9 @@ class _ChatPage extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
           title: (isConnecting
-              ? Text('Connecting chat to ' + widget.server.name + '...')
+              ? Text('Connecting to ' + widget.server.name + '...')
               : isConnected
-              ? Text('Live chat with ' + widget.server.name)
+              ? Text('Test sending data to ' + widget.server.name)
               : Text('Chat log with ' + widget.server.name))),
       body: SafeArea(
         child: Column(
@@ -136,7 +146,7 @@ class _ChatPage extends State<ChatPage> {
                             ? 'Wait until connected...'
                             : isConnected
                             ? 'Type your message...'
-                            : 'Chat got disconnected',
+                            : 'You got disconnected',
                         hintStyle: const TextStyle(color: Colors.grey),
                       ),
                       enabled: isConnected,
@@ -144,11 +154,27 @@ class _ChatPage extends State<ChatPage> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.all(4.0),
                   child: IconButton(
                       icon: const Icon(Icons.send),
                       onPressed: isConnected
                           ? () => _sendMessage(textEditingController.text)
+                          : null),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(4.0),
+                  child: IconButton(
+                      icon: const Icon(Icons.play_arrow_rounded),
+                      onPressed: isConnected
+                          ? () => _sendMessage("1")
+                          : null),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(4.0),
+                  child: IconButton(
+                      icon: const Icon(Icons.pause_rounded),
+                      onPressed: isConnected
+                          ? () => _sendMessage("2")
                           : null),
                 ),
               ],
@@ -208,7 +234,10 @@ class _ChatPage extends State<ChatPage> {
     }
   }
 
+  var jsonData;
   void _sendMessage(String text) async {
+    print(text);
+
     text = text.trim();
     textEditingController.clear();
 
@@ -221,10 +250,10 @@ class _ChatPage extends State<ChatPage> {
           messages.add(_Message(clientID, text));
         });
 
-        Future.delayed(Duration(milliseconds: 333)).then((_) {
+        Future.delayed(Duration(milliseconds: 100)).then((_) {
           listScrollController.animateTo(
               listScrollController.position.maxScrollExtent,
-              duration: Duration(milliseconds: 333),
+              duration: Duration(milliseconds: 100),
               curve: Curves.easeOut);
         });
       } catch (e) {
