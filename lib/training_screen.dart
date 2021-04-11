@@ -14,6 +14,8 @@ import 'package:gait_assessment/bt_dataentry.dart';
 import 'package:gait_assessment/BluetoothDeviceListEntry.dart';
 import 'dart:typed_data';
 import 'dart:convert';
+import 'dart:async';
+
 
 Random random = new Random();
 final FirebaseAuth auth = FirebaseAuth.instance;
@@ -273,9 +275,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
     initPlayer();
   }
 
-
-
-  /*@override
+  @override
   void dispose() {
     // Avoid memory leak (`setState` after dispose) and disconnect
     if (isConnected) {
@@ -285,7 +285,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
     }
 
     super.dispose();
-  }*/
+  }
 
   void initPlayer(){
     advancedPlayer = AudioPlayer();
@@ -303,7 +303,10 @@ class _TrainingProgressState extends State<TrainingProgress> {
   String localFilePath;
   bool _endTraining = false;
   signalEndTraining(){
-    if(_duration.inSeconds.toDouble() == _position.inSeconds.toDouble()){
+    if(_position.inSeconds.ceil() == 0){
+      _endTraining = false;
+    }
+    else if(_position.inSeconds.ceil() >= _duration.inSeconds.ceil() -1 ){
       _endTraining = true;
     } else{
       _endTraining = false;
@@ -330,43 +333,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
     );
   }
 
-  /*
-  void initCommunication(){
 
-    if (selectedDevice != null){
-      //There exists bluetooth device
-      BluetoothConnection.toAddress(selectedDevice.address).then((_connection) {
-        print('Connected to the device');
-        connection = _connection;
-        setState(() {
-          isConnecting = false;
-          isDisconnecting = false;
-        });
-
-        connection.input.listen(_onDataReceived).onDone(() {
-          // Example: Detect which side closed the connection
-          // There should be `isDisconnecting` flag to show are we are (locally)
-          // in middle of disconnecting process, should be set before calling
-          // `dispose`, `finish` or `close`, which all causes to disconnect.
-          // If we except the disconnection, `onDone` should be fired as result.
-          // If we didn't except this (no flag set), it means closing by remote.
-          if (isDisconnecting) {
-            print('Disconnecting locally!');
-          } else {
-            print('Disconnected remotely!');
-          }
-          if (this.mounted) {
-            setState(() {});
-          }
-        });
-      }).catchError((error) {
-        print('Cannot connect, exception occured');
-        print(error);
-      });
-
-    }
-  }
-  */
   void _onDataReceived(Uint8List data) {
     // Allocate buffer for parsed data
     int backspacesCounter = 0;
@@ -554,16 +521,66 @@ class _TrainingProgressState extends State<TrainingProgress> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 107),
                     child: IconButton(
-                      icon: Icon(_play? Icons.play_arrow_rounded : Icons.pause_rounded),
+                      icon: Icon(isConnecting ? Icons.bluetooth_connected : _play? Icons.play_arrow_rounded : Icons.pause_rounded),
                       onPressed: (){
                         setState(() {
-                          if(_play){
-                            audioCache.play('metronome_test.mp3');
-                            _play = false;
-                          } else {
-                            advancedPlayer.pause();
-                            _play = true;
+                          if(isConnecting){
+                            if( selectedDevice == null ){
+                              //insert sending data code
+                              print("There is none connected");
+                              return showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text("You're not connected"),
+                                  content: Text("Connect your device to your phone."),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+                                        selectedDevice =
+                                        await Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return SelectBondedDevicePage(checkAvailability: false);
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      child: Text("Settings",
+                                        style: TextStyle(color: Colors.teal[300]),),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            print(selectedDevice.name);
+                            _sendMessage("Start", selectedDevice);
+                            print(_bpmChoice);
                           }
+
+                          if (isConnected){
+                            print(selectedDevice.name);
+                            _sendMessage("Start", selectedDevice);
+                            print(_bpmChoice);
+                            //insert sending data code
+
+                            if(_play){
+                              //insert sending data code
+                              audioCache.play('metronome_test.mp3');
+                              _play = false;
+
+
+                            } else {
+                              advancedPlayer.pause();
+                              _play = true;
+                              //insert pausing code
+                            }
+                          }
+
+
+
+
+
                         });
                       },
                       //icon: Icon(_play? Icons.play_arrow_rounded : Icons.pause_rounded),
@@ -593,8 +610,29 @@ class _TrainingProgressState extends State<TrainingProgress> {
               ),
             ),
 
-            onTap: () {
+            onTap: () async {
               if(_endTraining){
+                //inform BT to end training
+                if( selectedDevice == null ){
+                  //insert sending data code
+                  print("There is none connected");
+                  selectedDevice =
+                      await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        //List page
+                        return SelectBondedDevicePage(checkAvailability: false);
+                      },
+                    ),
+                  );
+                  //insert sending data code
+                } else if (selectedDevice != null){
+                  print(selectedDevice.name);
+                  //insert sending data code
+                  _sendMessage("End", selectedDevice);
+                }
+
+                //save data to DB
                 Map <String,dynamic> training_data= {
                   "date": DateTime.now(),
                   "user_id": user_id(),
@@ -606,11 +644,29 @@ class _TrainingProgressState extends State<TrainingProgress> {
                 };
                 FirebaseFirestore.instance.collection("users").doc(user_id()).collection("training").add(training_data);
                 Navigator.of(context).pop();
+
               } else {
                 //do nothing
               }
             },
           ),
+          SizedBox(height: 50,),
+          Center(child: ((selectedDevice != null)
+            ? isConnecting
+              ? Text('Connecting to ' + selectedDevice.name + '...',
+                style: TextStyle(color: Colors.grey[500]))
+              : isConnected
+                ? _endTraining
+                  ? Text('Completed session',
+                    style: TextStyle(color: Colors.grey[500]))
+                  : Text('Ongoing session',
+                    style: TextStyle(color: Colors.grey[500]))
+              : Text('Disconnected from device',
+                style: TextStyle(color: Colors.grey[500]))
+            : Text('Disconnected',
+              style: TextStyle(color: Colors.grey[500]))
+          ))
+          /*
           MaterialButton(
             child: Text("GO!"),
             onPressed: () async {
@@ -656,144 +712,309 @@ class _TrainingProgressState extends State<TrainingProgress> {
                 _sendMessage("End", selectedDevice);
               }
             },
-          )
+          )*/
         ],
 
       ),
     );
   }
 }
-/*
-class TrainCommands extends StatefulWidget {
-  final BluetoothDevice server;
 
-  const TrainCommands({this.server});
+
+
+//from SelectBondedDevicePage
+
+class SelectBondedDevicePage extends StatefulWidget {
+  /// If true, on page start there is performed discovery upon the bonded devices.
+  /// Then, if they are not avaliable, they would be disabled from the selection.
+  final bool checkAvailability;
+  const SelectBondedDevicePage({this.checkAvailability = true});
 
   @override
-  _TrainCommandsState createState() => _TrainCommandsState();
+  _SelectBondedDevicePage createState() => new _SelectBondedDevicePage();
 }
+//modal
+var _bpmChoice = 49;
 
-class _TrainCommandsState extends State<TrainCommands> {
-  static final clientID = 0;
-  BluetoothConnection connection;
+class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with WidgetsBindingObserver {
+  List<_DeviceWithAvailability> devices = List<_DeviceWithAvailability>();
 
-  String _messageBuffer = '';
+  // Availability
+  StreamSubscription<BluetoothDiscoveryResult> _discoveryStreamSubscription;
+  bool _isDiscovering;
 
-  final TextEditingController textEditingController = new TextEditingController();
+  _SelectBondedDevicePage();
 
-  bool isConnecting = true;
-  bool get isConnected => connection != null && connection.isConnected;
+  BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
+  @override
 
-  bool isDisconnecting = false;
-
-  var jsonData;
+  @override
   void initState() {
     super.initState();
+    ///
+    WidgetsBinding.instance.addObserver(this);
+    _getBTState();
+    _stateChangeListener();
 
-    BluetoothConnection.toAddress(widget.server.address).then((_connection) {
-      print('Connected to the device');
-      connection = _connection;
-      setState(() {
-        isConnecting = false;
-        isDisconnecting = false;
-      });
+    ///
+    _isDiscovering = widget.checkAvailability;
 
-      connection.input.listen(_onDataReceived).onDone(() {
-        // Example: Detect which side closed the connection
-        // There should be `isDisconnecting` flag to show are we are (locally)
-        // in middle of disconnecting process, should be set before calling
-        // `dispose`, `finish` or `close`, which all causes to disconnect.
-        // If we except the disconnection, `onDone` should be fired as result.
-        // If we didn't except this (no flag set), it means closing by remote.
-        if (isDisconnecting) {
-          print('Disconnecting locally!');
-        } else {
-          print('Disconnected remotely!');
-        }
-        if (this.mounted) {
-          setState(() {});
-        }
-      });
-    }).catchError((error) {
-      print('Cannot connect, exception occured');
-      print(error);
-    });
-  }
-
-  void _sendMessage(String text) async {
-    print(text);
-
-    text = text.trim();
-    textEditingController.clear();
-
-    if (text.length > 0) {
-      try {
-        connection.output.add(utf8.encode(text + "\r\n"));
-        await connection.output.allSent;
-      } catch (e) {
-        // Ignore error, but notify state
-        setState(() {});
-      }
-    }
-  }
-
-  void _onDataReceived(Uint8List data) {
-    // Allocate buffer for parsed data
-    int backspacesCounter = 0;
-    data.forEach((byte) {
-      if (byte == 8 || byte == 127) {
-        backspacesCounter++;
-      }
-    });
-    Uint8List buffer = Uint8List(data.length - backspacesCounter);
-    int bufferIndex = buffer.length;
-    print(buffer);
-
-    /*
-    // Apply backspace control character
-    backspacesCounter = 0;
-    for (int i = data.length - 1; i >= 0; i--) {
-      if (data[i] == 8 || data[i] == 127) {
-        backspacesCounter++;
-      } else {
-        if (backspacesCounter > 0) {
-          backspacesCounter--;
-        } else {
-          buffer[--bufferIndex] = data[i];
-        }
-      }
+    if (_isDiscovering) {
+      _startDiscovery();
     }
 
-    // Create message if there is new line character
-    String dataString = String.fromCharCodes(buffer);
-    int index = buffer.indexOf(13);
-    if (~index != 0) {
+    // Setup a list of the bonded devices
+    FlutterBluetoothSerial.instance
+        .getBondedDevices()
+        .then((List<BluetoothDevice> bondedDevices) {
       setState(() {
-        messages.add(
-          _Message(
-            1,
-            backspacesCounter > 0
-                ? _messageBuffer.substring(
-                0, _messageBuffer.length - backspacesCounter)
-                : _messageBuffer + dataString.substring(0, index),
+        devices = bondedDevices
+            .map(
+              (device) => _DeviceWithAvailability(
+            device,
+            widget.checkAvailability
+                ? _DeviceAvailability.maybe
+                : _DeviceAvailability.yes,
           ),
-        );
-        _messageBuffer = dataString.substring(index);
+        ).toList();
       });
-    } else {
-      _messageBuffer = (backspacesCounter > 0
-          ? _messageBuffer.substring(
-          0, _messageBuffer.length - backspacesCounter)
-          : _messageBuffer + dataString);
-    }
+    });
+  }
 
-     */
+  _getBTState(){
+    FlutterBluetoothSerial.instance.state.then((state){
+      _bluetoothState = state;
+      if(_bluetoothState.isEnabled){
+        _listBondedDevices();
+      }
+      setState(() {
+
+      });
+    });
+  }
+
+  _stateChangeListener(){
+    FlutterBluetoothSerial.instance
+        .onStateChanged()
+        .listen((BluetoothState state){
+      _bluetoothState = state;
+      if(_bluetoothState.isEnabled){
+        _listBondedDevices();
+      } else {
+        devices.clear();
+      }
+      print("State isEnabled: ${state.isEnabled}");
+      setState(() {
+
+      });
+    });
+  }
+
+  _listBondedDevices(){
+    FlutterBluetoothSerial.instance.getBondedDevices().then((List<BluetoothDevice> bondedDevices){
+      devices = bondedDevices;
+      setState(() {
+
+      });
+    });
+  }
+
+  void _restartDiscovery() {
+    setState(() {
+      _isDiscovering = true;
+    });
+
+    _startDiscovery();
+  }
+
+  void _startDiscovery() {
+    _discoveryStreamSubscription =
+        FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
+          setState(() {
+            Iterator i = devices.iterator;
+            while (i.moveNext()) {
+              var _device = i.current;
+              if (_device.device == r.device) {
+                _device.availability = _DeviceAvailability.yes;
+                _device.rssi = r.rssi;
+              }
+            }
+          });
+        });
+
+    _discoveryStreamSubscription.onDone(() {
+      setState(() {
+        _isDiscovering = false;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    // Avoid memory leak (`setState` after dispose) and cancel discovery
+    _discoveryStreamSubscription?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    List<BluetoothDeviceListEntry> list = devices
+        .map((_device) => BluetoothDeviceListEntry(
+      device: _device.device,
+      rssi: _device.rssi,
+      enabled: _device.availability == _DeviceAvailability.yes,
+      onTap: () {
+        Navigator.of(context).pop(_device.device);
+      },
+    ))
+        .toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Bluetooth settings',
+          style: TextStyle(color: Colors.teal[300],),),
+        actions: <Widget>[
+          _isDiscovering
+              ? FittedBox(
+            child: Container(
+              margin: new EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Colors.teal[300],
+                ),
+              ),
+            ),
+          )
+              : IconButton(
+            icon: Icon(Icons.replay),
+            onPressed: _restartDiscovery,
+            color: Colors.teal[300],
+          )
+        ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(
+            color: Colors.teal[300]
+        ),
+      ),
+      backgroundColor: Color(0xFFFF1EEEE),
+      body: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+              child: Text("BPM setting",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  color:Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            ListTile(
+              title: const Text('49 BPM'),
+              leading: Radio(
+                value: 49,
+                groupValue: _bpmChoice,
+                onChanged: (value) {
+                  setState(() {
+                    _bpmChoice = value;
+                    print(_bpmChoice);
+                  });
+                },
+                activeColor: Colors.teal[300],
+              ),
+            ),
+            ListTile(
+              title: const Text('55 BPM'),
+              leading: Radio(
+                value: 55,
+                groupValue: _bpmChoice,
+                onChanged: (value) {
+                  setState(() {
+                    _bpmChoice = value;
+                    print(_bpmChoice);
+                  });
+                },
+                activeColor: Colors.teal[300],
+              ),
+            ),
+            ListTile(
+              title: const Text('60 BPM'),
+              leading: Radio(
+                value: 60,
+                groupValue: _bpmChoice,
+                onChanged: (value) {
+                  setState(() {
+                    _bpmChoice = value;
+                    print(_bpmChoice);
+                  });
+                },
+                activeColor: Colors.teal[300],
+              ),
+            ),
+            Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
+            SwitchListTile(
+                title: Text("Enable Bluetooth"),
+                value: _bluetoothState.isEnabled,
+                onChanged: (bool value){
+                  future() async{
+                    if(value){
+                      await FlutterBluetoothSerial.instance.requestEnable();
+                    } else{
+                      await FlutterBluetoothSerial.instance.requestDisable();
+                    }
+                    future().then((_){
+                      setState(() {
+
+                      });
+                    });
+                  }
+                }
+            ),
+            ListTile(
+              title: Text("Bluetooth Status"),
+              subtitle: Text(_bluetoothState.toString()),
+              trailing: IconButton(
+                color: Colors.grey,
+                icon: Icon(Icons.settings),
+                onPressed: (){
+                  FlutterBluetoothSerial.instance.openSettings();
+                },
+              ),
+            ),
+            //VerticalDivider(thickness: 2,color: Colors.black,),
+            Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+              child: Text("Connected device",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  color:Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Expanded(
+              child: list.isEmpty
+                  ? Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                child: Text("No connected devices",
+                  style: TextStyle(
+                    color:Colors.grey,
+                  ),
+                ),
+              )
+                  : ListView(children: list),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
-
- */

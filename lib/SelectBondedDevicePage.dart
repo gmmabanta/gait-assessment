@@ -7,7 +7,6 @@ class SelectBondedDevicePage extends StatefulWidget {
   /// If true, on page start there is performed discovery upon the bonded devices.
   /// Then, if they are not avaliable, they would be disabled from the selection.
   final bool checkAvailability;
-
   const SelectBondedDevicePage({this.checkAvailability = true});
 
   @override
@@ -27,6 +26,9 @@ class _DeviceWithAvailability extends BluetoothDevice {
 
   _DeviceWithAvailability(this.device, this.availability, [this.rssi]);
 }
+//modal
+
+var _bpmChoice = 49;
 
 class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with WidgetsBindingObserver {
   List<_DeviceWithAvailability> devices = List<_DeviceWithAvailability>();
@@ -111,8 +113,6 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
     });
   }
 
-
-
   void _restartDiscovery() {
     setState(() {
       _isDiscovering = true;
@@ -142,7 +142,6 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
       });
     });
   }
-
 
   @override
   void dispose() {
@@ -199,6 +198,60 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+              child: Text("BPM setting",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  color:Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            ListTile(
+              title: const Text('49 BPM'),
+              leading: Radio(
+                value: 49,
+                groupValue: _bpmChoice,
+                onChanged: (value) {
+                  setState(() {
+                    _bpmChoice = value;
+                    print(_bpmChoice);
+                  });
+                },
+                activeColor: Colors.teal[300],
+              ),
+            ),
+            ListTile(
+              title: const Text('55 BPM'),
+              leading: Radio(
+                value: 55,
+                groupValue: _bpmChoice,
+                onChanged: (value) {
+                  setState(() {
+                    _bpmChoice = value;
+                    print(_bpmChoice);
+                  });
+                },
+                activeColor: Colors.teal[300],
+              ),
+            ),
+            ListTile(
+              title: const Text('60 BPM'),
+              leading: Radio(
+                value: 60,
+                groupValue: _bpmChoice,
+                onChanged: (value) {
+                  setState(() {
+                    _bpmChoice = value;
+                    print(_bpmChoice);
+                  });
+                },
+                activeColor: Colors.teal[300],
+              ),
+            ),
+            Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
             SwitchListTile(
                 title: Text("Enable Bluetooth"),
                 value: _bluetoothState.isEnabled,
