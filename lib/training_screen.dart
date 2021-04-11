@@ -63,8 +63,8 @@ class TrainingScreen extends StatelessWidget {
         //      MaterialPageRoute(builder: (context)=>MainScreen()),
         //    );
         //  },
-        ),
-        
+      ),
+
       //),
     );
   }
@@ -120,7 +120,7 @@ class _ListPageState extends State<ListPage> {
             FlatButton(
               onPressed: () async{
                 Navigator.push(context, MaterialPageRoute(builder: (BuildContext context)=> ListTraining() ));
-                },
+              },
               child: Text("Results"),
               color: Colors.blueAccent,
             )
@@ -165,48 +165,48 @@ class _ListTrainingState extends State<ListTraining> {
 
       ),
       body: FutureBuilder(
-        future: getData(),
-        builder: (_,snapshot){
-        if(!snapshot.hasData){
-          return Text("no data");
-        }else{
-          final documents = snapshot.data.docs;
-          return ListView.builder(
-            itemCount: documents.length,
-            itemBuilder: (context, index){
-            Timestamp t = documents[index]['date'];
-            DateTime d = t.toDate();
-              return Container(
-                margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
-                padding: EdgeInsets.only(top: 20, bottom: 20, right: 25, left: 25),
-                width: 400,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                     //Text(document["user_id"].toString()),
-                    Text(d.format('F j'),
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
+          future: getData(),
+          builder: (_,snapshot){
+            if(!snapshot.hasData){
+              return Text("no data");
+            }else{
+              final documents = snapshot.data.docs;
+              return ListView.builder(
+                itemCount: documents.length,
+                itemBuilder: (context, index){
+                  Timestamp t = documents[index]['date'];
+                  DateTime d = t.toDate();
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
+                    padding: EdgeInsets.only(top: 20, bottom: 20, right: 25, left: 25),
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
                     ),
-                    Text(d.format('g:i A')),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        //Text(document["user_id"].toString()),
+                        Text(d.format('F j'),
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                        Text(d.format('g:i A')),
 
 
 
 
-                  ],
-                ),
+                      ],
+                    ),
+                  );
+                },
               );
-            },
-          );
 
-        }
+            }
 
-      }),
+          }),
     );
   }
 }
@@ -458,14 +458,14 @@ class _TrainingProgressState extends State<TrainingProgress> {
                   MaterialPageRoute(builder: (context)=>BluetoothApp()),
                 );*/
                 selectedDevice =
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          //List page
-                          return SelectBondedDevicePage(checkAvailability: false);
-                        },
-                      ),
-                    );
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      //List page
+                      return SelectBondedDevicePage(checkAvailability: false);
+                    },
+                  ),
+                );
                 //if what the list page returns is null, it doesnt go to the page
                 if (selectedDevice != null) {
                   print('Connect -> selected ' + selectedDevice.address);
@@ -473,7 +473,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
                 } else {
                   print('Connect -> no device selected');
                 }
-            }
+              }
           )
         ],
         backgroundColor: Colors.transparent,
@@ -486,111 +486,109 @@ class _TrainingProgressState extends State<TrainingProgress> {
       body: Column(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.only(left:60, right:60, bottom: 40),
-            child: Stack(
-              children: <Widget>[
-                SfRadialGauge(
-                  axes: <RadialAxis>[
-                    RadialAxis(
-                      minimum: 0,
-                      maximum: _duration.inSeconds.toDouble(),
-                      showLabels: false,
-                      showTicks: false,
-                      startAngle: 270,
-                      endAngle: 270,
-                      axisLineStyle: AxisLineStyle(
-                        thickness: 0.15,
-                        cornerStyle: CornerStyle.bothFlat,
-                        color: Color(0xFFBCFD8DC),
-                        thicknessUnit: GaugeSizeUnit.factor,
+              padding: EdgeInsets.only(left:60, right:60, bottom: 40),
+              child: Stack(
+                children: <Widget>[
+                  SfRadialGauge(
+                    axes: <RadialAxis>[
+                      RadialAxis(
+                        minimum: 0,
+                        maximum: _duration.inSeconds.toDouble(),
+                        showLabels: false,
+                        showTicks: false,
+                        startAngle: 270,
+                        endAngle: 270,
+                        axisLineStyle: AxisLineStyle(
+                          thickness: 0.15,
+                          cornerStyle: CornerStyle.bothFlat,
+                          color: Color(0xFFBCFD8DC),
+                          thicknessUnit: GaugeSizeUnit.factor,
+                        ),
+                        pointers: <GaugePointer>[
+                          RangePointer(
+                              value: signalEndTraining(),
+                              cornerStyle: CornerStyle.bothFlat,
+                              width: 0.15,
+                              sizeUnit: GaugeSizeUnit.factor,
+                              color: Colors.teal[300]
+                          )
+                        ],
                       ),
-                      pointers: <GaugePointer>[
-                        RangePointer(
-                            value: signalEndTraining(),
-                            cornerStyle: CornerStyle.bothFlat,
-                            width: 0.15,
-                            sizeUnit: GaugeSizeUnit.factor,
-                            color: Colors.teal[300]
-                        )
-                      ],
-                    ),
-                  ],
+                    ],
 
-                ),
-                Center(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 107),
-                    child: IconButton(
-                      icon: Icon(isConnecting ? Icons.bluetooth_connected : _play? Icons.play_arrow_rounded : Icons.pause_rounded),
-                      onPressed: (){
-                        setState(() {
-                          if(isConnecting){
-                            if( selectedDevice == null ){
-                              //insert sending data code
-                              print("There is none connected");
-                              return showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text("You're not connected"),
-                                  content: Text("Connect your device to your phone."),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () async {
-                                        Navigator.of(context).pop();
-                                        selectedDevice =
-                                        await Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) {
-                                              return SelectBondedDevicePage(checkAvailability: false);
-                                            },
-                                          ),
-                                        );
-                                      },
-                                      child: Text("Settings",
-                                        style: TextStyle(color: Colors.teal[300]),),
+                  ),
+                  Center(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 107),
+                        child: IconButton(
+                          icon: Icon(_play ? Icons.play_arrow_rounded : Icons.pause_rounded),
+                          onPressed: (){
+                            setState(() {
+                              if(_play){
+                                if( selectedDevice == null ){
+                                  //insert sending data code
+                                  print("There is none connected");
+                                  return showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text("You're not connected"),
+                                      content: Text("Connect your device to your phone."),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () async {
+                                            //Navigator.of(context).pop();
+                                            selectedDevice =
+                                            await Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) {
+                                                  return SelectBondedDevicePage(checkAvailability: false);
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          child: Text("Settings",
+                                            style: TextStyle(color: Colors.teal[300]),),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            print(selectedDevice.name);
+                                            _sendMessage("Start", selectedDevice);
+                                            print(_bpmChoice);
+                                            Navigator.pop(context);
+                                            _sendMessage("Start", selectedDevice);
+
+                                          },
+                                          child: Text("Start",
+                                            style: TextStyle(color: Colors.teal[300]),),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              );
-                            }
-                            print(selectedDevice.name);
-                            _sendMessage("Start", selectedDevice);
-                            print(_bpmChoice);
-                          }
+                                  );
+                                }
+                              }
+                              if(_play){
+                                if(isConnected){
+                                  audioCache.play('metronome_test.mp3');
+                                  _play = false;
+                                }
+                              }
 
-                          if (isConnected){
-                            print(selectedDevice.name);
-                            _sendMessage("Start", selectedDevice);
-                            print(_bpmChoice);
-                            //insert sending data code
+                              if(!_play){
+                                advancedPlayer.pause();
+                                _play = true;
+                                //insert pausing code
+                              }
 
-                            if(_play){
-                              //insert sending data code
-                              audioCache.play('metronome_test.mp3');
-                              _play = false;
-
-
-                            } else {
-                              advancedPlayer.pause();
-                              _play = true;
-                              //insert pausing code
-                            }
-                          }
-
-
-
-
-
-                        });
-                      },
-                      //icon: Icon(_play? Icons.play_arrow_rounded : Icons.pause_rounded),
-                      color: Colors.teal[300],
-                      iconSize: 120,
-                    ),
-                  )
-                ),
-              ],
-            )
+                            });
+                          },
+                          //icon: Icon(_play? Icons.play_arrow_rounded : Icons.pause_rounded),
+                          color: Colors.teal[300],
+                          iconSize: 120,
+                        ),
+                      )
+                  ),
+                ],
+              )
           ),
           GestureDetector(
             child: Container(
@@ -617,7 +615,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
                   //insert sending data code
                   print("There is none connected");
                   selectedDevice =
-                      await Navigator.of(context).push(
+                  await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) {
                         //List page
@@ -652,18 +650,18 @@ class _TrainingProgressState extends State<TrainingProgress> {
           ),
           SizedBox(height: 50,),
           Center(child: ((selectedDevice != null)
-            ? isConnecting
+              ? isConnecting
               ? Text('Connecting to ' + selectedDevice.name + '...',
-                style: TextStyle(color: Colors.grey[500]))
+              style: TextStyle(color: Colors.grey[500]))
               : isConnected
-                ? _endTraining
-                  ? Text('Completed session',
-                    style: TextStyle(color: Colors.grey[500]))
-                  : Text('Ongoing session',
-                    style: TextStyle(color: Colors.grey[500]))
+              ? _endTraining
+              ? Text('Completed session',
+              style: TextStyle(color: Colors.grey[500]))
+              : Text('Ongoing session',
+              style: TextStyle(color: Colors.grey[500]))
               : Text('Disconnected from device',
-                style: TextStyle(color: Colors.grey[500]))
-            : Text('Disconnected',
+              style: TextStyle(color: Colors.grey[500]))
+              : Text('Disconnected',
               style: TextStyle(color: Colors.grey[500]))
           ))
           /*
@@ -1018,3 +1016,4 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
     );
   }
 }
+6
