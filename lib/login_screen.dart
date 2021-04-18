@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'mainscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -10,21 +9,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  //TextEditingController _email = TextEditingController();
-  //TextEditingController _password = TextEditingController();
-  //TextEditingController _password1 = TextEditingController();
-  //TextEditingController _fname = TextEditingController();
-  //TextEditingController _lname = TextEditingController();
   String _email;
   String _password;
   String _password1;
   String _fname;
   String _lname;
+  String _errAlert = "";
+  bool _error = false;
 
 
   final FirebaseAuth auth = FirebaseAuth.instance;
+  User user;
   user_id(){
-    final User user = auth.currentUser;
+    user = auth.currentUser;
     final uid = user.uid;
     print(uid);
     return uid;
@@ -36,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
           email: _email,
           password: _password
       );
+
       Map <String,dynamic> user_data = {
         "email": _email,
         "first_name": _fname,
@@ -49,9 +47,18 @@ class _LoginScreenState extends State<LoginScreen> {
     } on FirebaseAuthException catch(e) {
       print("Error: ${e}");
       if (e.code == 'weak-password') {
+        setState(() {
+          _errAlert = "The password provided is too weak.";
+          _error = true;
+        });
         print('The password provided is too weak.');
+
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
+        setState(() {
+          _errAlert = "The account already exists for that email.";
+          _error = true;
+        });
       }
     } catch (e) {
       print("Error: $e");
@@ -67,13 +74,15 @@ class _LoginScreenState extends State<LoginScreen> {
       print("User: $userCredential");
     } on FirebaseAuthException catch(e) {
       print("Error: ${e}");
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
+      setState(() {
+        _errAlert = "Wrong username or password";
+        _error = true;
+      });
     } catch (e) {
-      print("Error: $e");
+      setState(() {
+        _errAlert = "Wrong username or password";
+        _error = true;
+      });
     }
   }
 
@@ -188,6 +197,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             onChanged: (value) {
                               setState(() {
                                 _password = value;
+                                if(value == ""){
+                                  _error = false;
+                                }
                               });
                             },
                             obscureText: _isObscurePW1,
@@ -212,7 +224,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               onChanged: (value) {
                                 setState(() {
                                   _password1 = value;
-
+                                  if(value == ""){
+                                    _error = false;
+                                  }
                                 });
                               },
                               obscureText: _isObscurePW2,
@@ -230,7 +244,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-
+                          Visibility(
+                            visible: _error ? true : false,
+                            child: Text(_errAlert),
+                          ),
                           SizedBox(height: 2,),
                           Visibility(
                             visible: (_pageState == 0) ? true : false,
@@ -315,13 +332,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       )
-
                   ),
                 ),
-
-
               ],
-
             ),
           ),
         )

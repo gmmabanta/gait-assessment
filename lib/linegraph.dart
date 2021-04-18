@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
+import 'package:date_time_format/date_time_format.dart';
 
 class Parameters {
   final double total_steps;
@@ -15,6 +17,9 @@ class Parameters {
 }
 
 class LineChartSample1 extends StatefulWidget {
+  List<QueryDocumentSnapshot> document;
+  LineChartSample1({this.document});
+
   @override
   State<StatefulWidget> createState() => LineChartSample1State();
 }
@@ -34,7 +39,7 @@ class LineChartSample1State extends State<LineChartSample1> {
     return qn;
   }
 
-  List<FlSpot> generateData(documents){
+  /*List<FlSpot> generateData(documents){
     //for (int index = 0; documents!=null || index<documents.length;index++){
       //print("index: $index");
       //print("first ${index.toDouble()} | second: ${documents[index]['total_steps'].toDouble()}");
@@ -48,7 +53,7 @@ class LineChartSample1State extends State<LineChartSample1> {
       }
 
     //}
-  }
+  }*/
   /*
   List<FlSpot> generateData (documents){
     for (int index = 0;index<documents.length;index++){
@@ -66,61 +71,46 @@ class LineChartSample1State extends State<LineChartSample1> {
   void initState() {
     super.initState();
     isShowingMainData = true;
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getData(),
-      builder: (context, snapshot){
-        if(!snapshot.hasData){
-          return Text("no data");
-        } else {
-          final documents = snapshot.data.docs;
-          return Container(
-            padding: EdgeInsets.only(top:20, bottom:10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Text("Average Step Time",
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16
-                      ),
-                    ),
-                    SizedBox(width: 110)
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    LineChart(sampleData2(documents),
+    return Container(
+      padding: EdgeInsets.only(bottom:10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            child: SingleChildScrollView(
+              clipBehavior: Clip.none,
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    width: (widget.document.length*30).toDouble(),
+                    child: LineChart(sampleData2(widget.document),
                       swapAnimationDuration: const Duration(milliseconds: 250),
                     ),
-                    SizedBox(width: 5)
+                  ),
 
-                  ],
-                ),
-
-
-
-              ],
+                ],
+              ),
             ),
-          );
+          ),
 
-        }
-
-      },
+        ],
+      ),
     );
 
   }
 
   LineChartData sampleData2(documents) {
     return LineChartData(
+      backgroundColor: Colors.white,
+      lineBarsData: linesBarData2(documents),
       lineTouchData: LineTouchData(
         enabled: true,
       ),
@@ -129,32 +119,41 @@ class LineChartSample1State extends State<LineChartSample1> {
       ),
       titlesData: FlTitlesData(
         bottomTitles: SideTitles(
-          showTitles: true,
-          reservedSize: 25,
-          getTextStyles: (value) => const TextStyle(
-            color: Colors.blueGrey,
-            fontSize: 14,
-          ),
-          margin: 10,
-          getTitles: (value) {
-            switch (value.toInt()) {
-              case 2:
-                return 'SEPT';
-              case 7:
-                return 'OCT';
-              case 12:
-                return 'DEC';
+            showTitles: true,
+            reservedSize: 20,
+            getTextStyles: (value) => const TextStyle(
+              color: Colors.blueGrey,
+              fontSize: 9,
+            ),
+            margin: 8,
+            getTitles: (value) {
+              Timestamp t;
+              DateTime d;
+              var xlabel;
+              t = documents[value.toInt()]['date'];
+              d = t.toDate();
+              xlabel = d.format('n/j').toString();
+              print("XLABEL: ${xlabel}");
+              // generateXTitles(documents, value);
+              /*switch(value.toInt()){
+                case 1:
+                  return "test";
+                default:
+                  return generateXTitles(documents, value);
+              }*/
+              return xlabel;
+              //return ;
             }
-            return '';
-          },
+
         ),
         leftTitles: SideTitles(
+          interval: 10,
           showTitles: true,
           getTextStyles: (value) => const TextStyle(
             color: Colors.blueGrey,
-            fontSize: 14,
+            fontSize: 10,
           ),
-          getTitles: (value) {
+          /*getTitles: (value) {
             switch (value.toInt()) {
               case 10:
                 return '10';
@@ -166,10 +165,19 @@ class LineChartSample1State extends State<LineChartSample1> {
                 return '40';
               case 50:
                 return '50';
+              case 60:
+                return '60';
+              case 70:
+                return '70';
             }
             return '';
           },
-          margin: 5,
+
+           */
+          //getTitles: (value){
+          //  generateYTitles(documents, 'ave_step_time', value);
+          //},
+          margin: 10,
           reservedSize: 15,
         ),
       ),
@@ -178,7 +186,7 @@ class LineChartSample1State extends State<LineChartSample1> {
           border: const Border(
             bottom: BorderSide(
               color: Colors.black26,
-              width: 1,
+              width: 1.5,
             ),
             left: BorderSide(
               color: Colors.transparent,
@@ -191,14 +199,14 @@ class LineChartSample1State extends State<LineChartSample1> {
             ),
           )),
       minX: 0,
-      maxX: 14,//make this the current # of entries?
-      maxY: 60,
+      maxX: documents.length.toDouble(),
+      maxY: checkmaxY(documents, 'ave_step_time'),
       minY: 0,
-      lineBarsData: linesBarData2(documents),
+      //lineBarsData: linesBarData2(documents),
     );
   }
 
-  final List<FlSpot> dummyData =
+  /*final List<FlSpot> dummyData =
     [
       FlSpot(1, 30),
       FlSpot(4, 50.8),
@@ -208,36 +216,96 @@ class LineChartSample1State extends State<LineChartSample1> {
       FlSpot(12, 10.5),
       FlSpot(13, 10.9),
     ];
+*/
 
-  /*
   final List<FlSpot> dummyData2 = List.generate(8, (index) {
     return FlSpot(index.toDouble(), index * Random().nextDouble());
   });
-  */
+
+  double checkmaxY(documents, String field){
+    double _maxY = 0;
+    var i;
+    documents.forEach((doc){
+      i = doc[field].toDouble();
+      if(_maxY < i ){
+        _maxY = i;
+      }
+      print("This is an iteration");
+      return (_maxY);
+    });
+  }
+
+  //function that returns string
+  generateXTitles(documents, value){
+    Timestamp t;
+    DateTime d;
+    var xlabel;
+    t = documents[value.toInt()]['date'];
+    d = t.toDate();
+    xlabel = d.format('d/j');
+    print("XLABEL: ${xlabel}");
+    return xlabel;
+
+    //documents.forEach((doc){
+    //  t = doc['date'];
+    //  d = t.toDate();
+    //  xlabel = d.format('d/j');
+    //  return xlabel;
+    //});
+  }
+
+
+  generateYTitles(documents, String field, value){
+    //List<String> yArr = [];
+    var yMax = checkmaxY(documents, field);
+    for (var i =0; i < yMax; i=i+10){
+      //yArr.add(i.toString());
+      return i.toString();
+    }
+
+    switch(value.toInt()){
+
+    }
+    //return yArr;
+  }
+
+  /*checkmaxX(documents){
+    double _maxX = 0;
+    var i;
+    documents.forEach((doc){
+      if(_maxY < i ){
+        _maxY = i;
+      }
+      print("This is an iteration");
+      return (_maxY);
+    });
+  }*/
 
   List<LineChartBarData> linesBarData2(documents) {
+    print("ITERATE Y");
+    //checkmaxY(documents,'total_steps');
     final List<FlSpot> trainingData = List.generate(documents.length, (index) {
-      return FlSpot(index.toDouble(), documents[index]['total_steps'].toDouble());
+      return FlSpot(index.toDouble(), documents[index]['ave_step_time'].toDouble());
     });
 
     return [
       LineChartBarData(
         spots: trainingData,
+        //spots: dummyData2,
         //spots: generateData(documents),
         colors: const [
           Color(0xFF4DB6AC),
         ],
-        barWidth: 1.5,
+        barWidth: 2,
         dotData: FlDotData(
-          show: true
+            show: true
         ),
       ),
     ];
   }
 }
 
-
-
+/*
 class StepPercentage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => StepPercentageState();
@@ -388,7 +456,7 @@ class StepPercentageState extends State<StepPercentage> {
             ),
           )),
       minX: 0,
-      maxX: 14,//make this the current # of entries?
+      maxX: 14,//@TODO: make this the current # of entries?
       maxY: 60,
       minY: 0,
       lineBarsData: linesBarData2(documents),
@@ -432,3 +500,5 @@ class StepPercentageState extends State<StepPercentage> {
     ];
   }
 }
+
+ */

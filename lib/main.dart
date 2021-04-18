@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gait_assessment/login_screen.dart';
 
+
 //void main() async {
 void main() {
   //WidgetsFlutterBinding.ensureInitialized();
@@ -30,8 +31,10 @@ class MyApp extends StatelessWidget {
 
 class LandingScreen extends StatelessWidget {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
   @override
   Widget build(BuildContext context) {
+
     return FutureBuilder(
       future: _initialization,
       builder: (context, snapshot){
@@ -44,13 +47,11 @@ class LandingScreen extends StatelessWidget {
         }
 
         if(snapshot.connectionState == ConnectionState.done){
-          return StreamBuilder(
+          return StreamBuilder (
             stream: FirebaseAuth.instance.authStateChanges(),
-
             builder: (context, snapshot) {
               if(snapshot.connectionState == ConnectionState.active){
                 //User user = snapshot.data;
-
 
                 if(!snapshot.hasData){
                   //Provider.of<UserData>(context).currentUserId = snapshot.data.uid;
@@ -58,12 +59,12 @@ class LandingScreen extends StatelessWidget {
                   return LoginScreen();
                 } else {
                   //authenticated and logged in already
-                  return MainScreen();
+                    return MainScreen();
                 }
               }
               return Scaffold(
                 body: Center(
-                  child: Text("Checking Authentication..."),
+                  child: Text("Checking authentication..."),
                 ),
               );
             }

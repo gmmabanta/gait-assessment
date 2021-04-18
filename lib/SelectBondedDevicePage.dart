@@ -102,6 +102,8 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
 
       });
     });
+
+
   }
 
   _listBondedDevices(){
@@ -285,7 +287,7 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
             Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
             Container(
               padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-              child: Text("Connected device",
+              child: Text("Select device",
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontSize: 16,
