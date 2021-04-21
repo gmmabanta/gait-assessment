@@ -69,97 +69,56 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
                                 margin: EdgeInsets.all(5),
                                 child: Column(
                                   children: <Widget>[
-                                    /*
-                          Container(
-                            height: _heightTP,
-                            padding: EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              color: Colors.teal[300],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: <Widget>[
-                                GestureDetector(
-                                  child: Container(
-                                    padding: EdgeInsets.all(11),
-                                    child: Text('Temporal Parameters',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 17
-                                      ),
-                                    ),
-                                  ),
-                                  onTap: (){
-                                    setState(() {
-                                      if(_dropStateTP != 0){
-                                        _dropStateTP = 0;
-                                        _viewTP = !_viewTP;
-                                      } else {
-                                        _dropStateTP = 1;
-                                        _viewTP = !_viewTP;
-                                      }
-                                    });
-                                  },
-                                ),
-                                Visibility(
-                                  visible: _viewTP,
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                                    color: Colors.white,
-                                    elevation: 2,
-                                    child: BarChartView()
-                                ),
-                                )
-                              ],
-                            )
-                          ),*/
-                                    SizedBox(height: 15),
-                                    Container(
-                                        padding: EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                                          color: Colors.teal[300],
+                                    GestureDetector(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 5),
+                                        child: ListTile(
+                                          dense: true,
+                                          title: Text('Average Step Time',
+                                            style: TextStyle(
+                                                color: Colors.blueGrey,
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 16
+                                            ),
+                                          ),
+                                          trailing: IconButton(
+                                              icon: Icon(_viewAveStepTime ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+                                              color: Colors.blueGrey,
+                                              splashRadius: 28,
+                                              onPressed: (){
+                                              }),
                                         ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: <Widget>[
-                                            GestureDetector(
-                                              child: Container(
-                                                padding: EdgeInsets.all(10),
-                                                child: Text('RAS Parameters',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.w500,
-                                                      fontSize: 17
-                                                  ),
-                                                ),
-                                              ),
-                                              onTap: (){
-                                                setState(() {
-                                                  _viewAveStepTime = !_viewAveStepTime;
-                                                });
-                                              },
-                                            ),
-                                            Visibility(
-                                                visible: _viewAveStepTime,
-                                                child: Card(
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                  color: Colors.white,
-                                                  elevation: 2,
-                                                  //child: StepPercentage(),
-                                                  child: Container(),
-                                                )
-                                            ),
-                                          ],
-                                        )
+                                      ),
+                                      onTap: (){
+                                      },
                                     ),
-                                    SizedBox(height: 15),
+                                    GestureDetector(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 5),
+                                        child: ListTile(
+                                          dense: true,
+                                          title: Text('Cadence',
+                                            style: TextStyle(
+                                                color: Colors.blueGrey,
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 16
+                                            ),
+                                          ),
+                                          trailing: IconButton(
+                                              icon: Icon(_viewCadence ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+                                              color: Colors.blueGrey,
+                                              splashRadius: 28,
+                                              onPressed: (){
+                                                setState(() {
+                                                });
+                                              }),
+                                        ),
+                                      ),
+                                      onTap: (){
+                                        setState(() {
+                                        });
+                                      },
+                                    ),
                                   ],
                                 ),
 

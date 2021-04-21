@@ -257,6 +257,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
   BluetoothDevice selectedDevice;
 
   String _messageBuffer = '';
+  bool _getResults = false;
 
   final TextEditingController textEditingController = new TextEditingController();
 
@@ -272,7 +273,6 @@ class _TrainingProgressState extends State<TrainingProgress> {
   void initState() {
     super.initState();
     initPlayer();
-
   }
 
   @override
@@ -298,8 +298,6 @@ class _TrainingProgressState extends State<TrainingProgress> {
     advancedPlayer.positionHandler = (p) => setState((){
       _position = p;
     });
-
-
   }
 
   @override
@@ -312,81 +310,33 @@ class _TrainingProgressState extends State<TrainingProgress> {
         isDisconnecting = false;
       });
       connection.input.listen((event) {
-        print("Test listen");
         var decoded = utf8.decode(event);
         print(decoded);
       }).onData((data) {
-        //print("RAW DATA:");
-        //print(utf8.decode(data));
-
-        // Allocate buffer for parsed data
-        int backspacesCounter = 0;
-        data.forEach((byte) {
-          if (byte == 8 || byte == 127) {
-            backspacesCounter++;
-          }
-        });
-        Uint8List buffer = Uint8List(data.length - backspacesCounter);
-        int bufferIndex = buffer.length;
-        //print("this is the buffer data:");
-        //print(buffer);
-
-        // Apply backspace control character
-        backspacesCounter = 0;
-        for (int i = data.length - 1; i >= 0; i--) {
-          if (data[i] == 8 || data[i] == 127) {
-            backspacesCounter++;
+        print("RAW DATA:");
+        print(utf8.decode(data));
+        var dataDecode = utf8.decode(data);
+        for(var i=0; i<dataDecode.length;i++){
+          print(dataDecode[i]);
+          if(dataDecode[i] == '\r'){
+            break;
           } else {
-            if (backspacesCounter > 0) {
-              backspacesCounter--;
-            } else {
-              buffer[--bufferIndex] = data[i];
+            //keep appending
+            if(dataDecode[i] == '{' ){
+              _getResults = true;
+            }
+            if(_getResults){
+              _messageBuffer = _messageBuffer + dataDecode[i];
             }
           }
         }
-
-        // Create message if there is new line character
-        String dataString = String.fromCharCodes(buffer);
-        int index = buffer.indexOf(13);
-        if (~index != 0) {
-          //(backspacesCounter > 0
-          //    ? _messageBuffer.substring(
-          //    0, _messageBuffer.length - backspacesCounter)
-          //    : _messageBuffer + dataString.substring(0, index));
-          _messageBuffer = dataString.substring(index);
-        } else {
-          _messageBuffer = (backspacesCounter > 0
-              ? _messageBuffer.substring(
-              0, _messageBuffer.length - backspacesCounter)
-              : _messageBuffer + dataString);
-        }
-        print("READY STRING:");
-        print(dataString);
-        if(dataString=='1'){
-          //_sendMessage('Acknowledge', selectedDevice);
-          print("Acknowledged");
-        }
-
-        //_sendMessage("RTT", selectedDevice)
-      });
-      /*
-      connection.input.listen(_onDataReceived).onDone(() {
-        // Example: Detect which side closed the connection
-        // There should be `isDisconnecting` flag to show are we are (locally)
-        // in middle of disconnecting process, should be set before calling
-        // `dispose`, `finish` or `close`, which all causes to disconnect.
-        // If we except the disconnection, `onDone` should be fired as result.
-        // If we didn't except this (no flag set), it means closing by remote.
-        if (isDisconnecting) {
-          print('Disconnecting locally!');
-        } else {
-          print('Disconnected remotely!');
-        }
-        if (this.mounted) {
-          setState(() {});
+        if(_getResults){
+          print("This is the message: ${_messageBuffer}");
+          jsonData = jsonDecode(_messageBuffer);
+          _getResults = false;
+          _messageBuffer = '';
         }
       });
-      */
     }).catchError((error) {
       print('Cannot connect, exception occured');
       print(error);
@@ -399,7 +349,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
     if(_position.inSeconds.ceil() == 0){
       _endTraining = false;
     }
-    else if(_position.inSeconds.ceil() >= _duration.inSeconds.ceil() -1 ){
+    else if(_position.inSeconds.ceil() >= _duration.inSeconds.ceil() - 1 ){
       _endTraining = true;
     } else{
       _endTraining = false;
@@ -474,8 +424,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
       });
     } else {
       _messageBuffer = (backspacesCounter > 0
-          ? _messageBuffer.substring(
-          0, _messageBuffer.length - backspacesCounter)
+          ? _messageBuffer.substring(0, _messageBuffer.length - backspacesCounter)
           : _messageBuffer + dataString);
     }
 
@@ -485,7 +434,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
   void _sendMessage(String text, BluetoothDevice device) async {
     print("This is the device withint _sendMessage:");
     if(text == "Start"){
-      text = "1";
+      text = "1/${_bpmChoice.toString()}";
     } else if(text == "Stop"){
       text = "2";
     } else {
@@ -498,7 +447,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
 
     if (text.length > 0) {
       try {
-        var printMessage = utf8.encode(text + "\r\n");
+        var printMessage = utf8.encode(text);
         print(printMessage); //shows in utf8
         print(connection.toString()); //null
         connection.output.add(printMessage);
@@ -595,7 +544,8 @@ class _TrainingProgressState extends State<TrainingProgress> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 107),
                     child: IconButton(
-                      icon: Icon(isConnecting ? Icons.bluetooth_connected : _play? Icons.play_arrow_rounded : Icons.stop_rounded),
+                      icon: Icon(isConnecting ? Icons.bluetooth_connected : _play? Icons.play_arrow_rounded : _endTraining? Icons.check_circle_rounded : Icons.stop_rounded),
+
                       onPressed: (){
                         setState(() {
                           if(isConnecting){
@@ -640,17 +590,47 @@ class _TrainingProgressState extends State<TrainingProgress> {
 
                             if(_play){
                               //insert sending data code
-                              Future.delayed(const Duration(milliseconds: 1244), () {
+                              Future.delayed(const Duration(milliseconds: 561), () {
                                 audioCache.play('metronome_test.mp3');
                                 _sendMessage('Start', selectedDevice);
                                 _play = false;
 
                               });
                             } else {
-                              advancedPlayer.stop();
-                              _play = true;
-                              _sendMessage("Stop", selectedDevice);
-                              //insert pausing code
+                                if(_endTraining){
+                                  _sendMessage("Stop", selectedDevice);
+
+                                  /*Map <String,dynamic> training_data= {
+                                    "date": DateTime.now(),
+                                    "user_id": user_id(),
+                                    "total_steps":total_steps.toInt(),
+                                    "correct_steps":correct_steps.toInt(),
+                                    "wrong_steps":wrong_steps.toInt(),
+                                    "cadence":cadence.toInt(),
+                                    "ave_step_time":ave_step_time.toInt(),
+                                  };*/
+                                  Map <String,dynamic> training_data= {
+                                    "date": DateTime.now(),
+                                    "user_id": user_id(),
+                                    "total_steps":jsonData['total_steps'].toInt(),
+                                    "correct_steps":jsonData['correct_steps'].toInt(),
+                                    "wrong_steps":jsonData['wrong_steps'].toInt(),
+                                    "cadence":jsonData['cadence'],
+                                    "ave_step_time":jsonData['ave_step_time'].toInt(),
+                                  };
+                                  FirebaseFirestore.instance.collection("users").doc(user_id()).collection("training").add(training_data);
+
+                                  Future.delayed(const Duration(seconds: 3), () {
+                                    jsonData = '';
+
+                                    Navigator.of(context).pop();
+                                  });
+
+                                } else {
+                                  advancedPlayer.stop();
+                                  _play = true;
+                                  _sendMessage("Stop", selectedDevice);
+                                }
                             }
                           }
                         });
@@ -664,6 +644,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
               ],
             )
           ),
+          /*
           GestureDetector(
             child: Container(
               margin: EdgeInsets.only(left:60, right:60),
@@ -701,29 +682,30 @@ class _TrainingProgressState extends State<TrainingProgress> {
                 } else if (selectedDevice != null){
                   print(selectedDevice.name);
                   //insert sending data code
-                  //_sendMessage("Stop", selectedDevice);
+                  //
+                  _sendMessage("Stop", selectedDevice);
                 }
 
-                //save data to DB
-                Map <String,dynamic> training_data= {
-                  "date": DateTime.now(),
-                  "user_id": user_id(),
-                  "total_steps":total_steps.toInt(),
-                  "correct_steps":correct_steps.toInt(),
-                  "wrong_steps":wrong_steps.toInt(),
-                  "cadence":cadence.toInt(),
-                  "ave_step_time":ave_step_time.toInt(),
-                };
-                FirebaseFirestore.instance.collection("users").doc(user_id()).collection("training").add(training_data);
+                Future.delayed(const Duration(milliseconds: 561), () {
+                  //save data to DB
+                  Map <String,dynamic> training_data= {
+                    "date": DateTime.now(),
+                    "user_id": user_id(),
+                    "total_steps":total_steps.toInt(),
+                    "correct_steps":correct_steps.toInt(),
+                    "wrong_steps":wrong_steps.toInt(),
+                    "cadence":cadence.toInt(),
+                    "ave_step_time":ave_step_time.toInt(),
+                  };
+                  FirebaseFirestore.instance.collection("users").doc(user_id()).collection("training").add(training_data);
 
-
-                Navigator.of(context).pop();
-
-              } else {
-                //do nothing
+                  Navigator.of(context).pop();
+                });
+              } else {//do nothing
               }
             },
           ),
+           */
           SizedBox(height: 50,),
           Center(child: ((selectedDevice != null)
             ? isConnecting
