@@ -20,8 +20,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Main Menu',
       theme: ThemeData(
-        primaryColor: Colors.teal[400],
+        primaryColor: Colors.teal[300],
         accentColor: Colors.grey[200],
+        cursorColor: Colors.grey,
+        dialogBackgroundColor: Colors.white,
+        colorScheme: ColorScheme.light(primary: Colors.teal[300]),
+        buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+        highlightColor: Colors.grey[400],
+        textSelectionColor: Colors.grey,
       ),
       home: LandingScreen(),
     );

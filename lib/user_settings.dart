@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:date_time_format/date_time_format.dart';
 import 'package:flutter/widgets.dart';
+import 'package:gait_assessment/assignments_screen.dart';
 
 String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
@@ -237,22 +238,46 @@ class _DetailUserState extends State<DetailUser> {
                   ],
                 ),
               ),
-              Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(_showGraph ? "Session Logs" : "Summary",
-                        style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w500),),
-                      IconButton(icon: Icon(_showGraph ? Icons.show_chart_rounded : Icons.wysiwyg_rounded, size: 30,), onPressed: (){
-                        setState(() {
-                          _showGraph = !_showGraph;
-                        });
-                      })
-                    ],
-                  )
+              Visibility(
+                visible: (widget.detail_doc['role'].toString() == 'patient') ? true : false,
+                child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(_showGraph ? "Session Logs" : "Summary",
+                          style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w500),),
+                        IconButton(icon: Icon(_showGraph ? Icons.show_chart_rounded : Icons.wysiwyg_rounded, size: 30,), onPressed: (){
+                          setState(() {
+                            _showGraph = !_showGraph;
+                          });
+                        })
+                      ],
+                    )
+                ),
               ),
-
+              Visibility(
+                visible: (widget.detail_doc['role'].toString() == 'therapist') ? true : false,
+                child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Therapist Assignments",
+                                style: TextStyle(fontSize: 16,color: Colors.grey, fontWeight: FontWeight.w500)),
+                            IconButton(
+                                icon: Icon(Icons.edit_rounded),
+                                onPressed: (){}
+                            )
+                          ],
+                        ),
+                        AssignmentScreen(uid: uid)
+                      ],
+                    )
+                ),
+              ),
               Visibility(
                 visible: !_showGraph,
                 child: Container (
@@ -260,13 +285,13 @@ class _DetailUserState extends State<DetailUser> {
                 ),
               ),
               Visibility(
-                  visible: _showGraph,
+                  visible: (widget.detail_doc['role'].toString() == 'patient') ? _showGraph : false,
                   child: StreamBuilder(
                       stream: FirebaseFirestore.instance.collection('/users/'+uid+'/training/').orderBy('date', descending: true).snapshots(),
                       builder: (context, snapshot){
                         if(!snapshot.hasData){
-                          return Text("NOT POSSIBRU!");
-                        } else if (snapshot.hasData){
+                          return Text("Loading data...");
+                        } else if  (snapshot.hasData){
                           final documents = snapshot.data.docs;
                           return ListView.builder(
                               scrollDirection: Axis.vertical,

@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gait_assessment/settings_screen.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 //import 'package:assets_audio_player/assets_audio_player.dart';
 
 typedef void OnError(Exception exception);

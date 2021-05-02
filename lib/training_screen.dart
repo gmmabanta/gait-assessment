@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gait_assessment/settings_screen.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:date_time_format/date_time_format.dart';
@@ -433,13 +432,6 @@ class _TrainingProgressState extends State<TrainingProgress> {
 
   void _sendMessage(String text, BluetoothDevice device) async {
     print("This is the device withint _sendMessage:");
-    if(text == "Start"){
-      text = "1/${_bpmChoice.toString()}";
-    } else if(text == "Stop"){
-      text = "2";
-    } else {
-      //
-    }
     print(device);
     //Send
     text = text.trim();
@@ -460,8 +452,19 @@ class _TrainingProgressState extends State<TrainingProgress> {
     }
   }
 
+  Future<String> getDocId(DocumentReference value) async {
+
+  }
+
   @override
   Widget build(BuildContext context) {
+    var insert_data;
+
+    training_id (DocumentReference doc){
+      insert_data = doc.id.toString();
+      return insert_data;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Training",
@@ -591,14 +594,16 @@ class _TrainingProgressState extends State<TrainingProgress> {
                             if(_play){
                               //insert sending data code
                               Future.delayed(const Duration(milliseconds: 561), () {
+                                //audioCache.play('${_bpmChoice}'+'bpm_'+'${_trainingDuration}'+'min.mp3');
                                 audioCache.play('metronome_test.mp3');
-                                _sendMessage('Start', selectedDevice);
+                                _sendMessage('1/${_bpmChoice}/${_trainingDuration}', selectedDevice);
                                 _play = false;
 
                               });
                             } else {
                                 if(_endTraining){
-                                  _sendMessage("Stop", selectedDevice);
+                                  _sendMessage("2", selectedDevice);
+                                  var uid = user_id();
 
                                   /*Map <String,dynamic> training_data= {
                                     "date": DateTime.now(),
@@ -609,27 +614,43 @@ class _TrainingProgressState extends State<TrainingProgress> {
                                     "cadence":cadence.toInt(),
                                     "ave_step_time":ave_step_time.toInt(),
                                   };*/
+
+
                                   Map <String,dynamic> training_data= {
                                     "date": DateTime.now(),
-                                    "user_id": user_id(),
+                                    "user_id": uid,
                                     "total_steps":jsonData['total_steps'].toInt(),
                                     "correct_steps":jsonData['correct_steps'].toInt(),
                                     "wrong_steps":jsonData['wrong_steps'].toInt(),
                                     "cadence":jsonData['cadence'],
                                     "ave_step_time":jsonData['ave_step_time'].toInt(),
                                   };
-                                  FirebaseFirestore.instance.collection("users").doc(user_id()).collection("training").add(training_data);
 
-                                  Future.delayed(const Duration(seconds: 3), () {
+                                  var training = FirebaseFirestore.instance.collection("users").doc(uid).collection("training");
+                                  training.add(training_data).then((value) async {
+                                    //print("This is the data ${value.path}");
+                                    Map <String,dynamic> feedback = {
+                                      "date": DateTime.now(),
+                                      "patient_id": uid,
+                                      "therapist_id":"",
+                                      "therapist_name":"",
+                                      "parent_id":value.id,       //shows the thread sequencing
+                                      "session_id":value.id,                 //shows the training session associated with
+                                      "content":"",
+                                    };
+                                    FirebaseFirestore.instance.collection("users").doc(uid).collection("feedback").doc(value.id).set(feedback);
+
+                                  });
+
+                                  Future.delayed(const Duration(seconds: 1), () {
                                     jsonData = '';
-
                                     Navigator.of(context).pop();
                                   });
 
                                 } else {
                                   advancedPlayer.stop();
                                   _play = true;
-                                  _sendMessage("Stop", selectedDevice);
+                                  _sendMessage("2", selectedDevice);
                                 }
                             }
                           }
@@ -744,8 +765,8 @@ class SelectBondedDevicePage extends StatefulWidget {
   _SelectBondedDevicePage createState() => new _SelectBondedDevicePage();
 }
 //modal
-var _bpmChoice = 49;
-
+var _bpmChoice = 55;
+var _trainingDuration = 10;
 class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with WidgetsBindingObserver {
   List<_DeviceWithAvailability> devices = List<_DeviceWithAvailability>();
 

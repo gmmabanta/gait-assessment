@@ -16,19 +16,6 @@ class CadenceGraph extends StatefulWidget {
 
 class CadenceGraphState extends State<CadenceGraph> {
 
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  user_id(){
-    final User user = auth.currentUser;
-    final uid = user.uid;
-    //print(uid);
-    return uid;
-  }
-
-  Future getData() async {
-    QuerySnapshot qn = await FirebaseFirestore.instance.collection("/users/" +user_id() +"/training/").get();
-    return qn;
-  }
-
   bool isShowingMainData;
 
   @override

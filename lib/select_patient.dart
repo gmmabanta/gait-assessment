@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:date_time_format/date_time_format.dart';
+import 'package:gait_assessment/view_patientresults.dart';
 
 
 class SelectPatient extends StatefulWidget {
@@ -13,6 +14,7 @@ class _SelectPatientState extends State<SelectPatient> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -35,18 +37,6 @@ class _SelectPatientState extends State<SelectPatient> {
               margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
               child: Text("Select Patient",
                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-              ),
-              child: TextField(
-                decoration: InputDecoration(hintText: "Search", border: InputBorder.none),
-              )
-
             ),
             StreamBuilder(
                 stream: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'patient').snapshots(),
@@ -85,25 +75,7 @@ class _SelectPatientState extends State<SelectPatient> {
                                     MaterialPageRoute(builder: (context) => DetailPatient(detail_doc: documents[index])
                                 ));
                               }),
-                            /*Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            ListTile(
-                              leading: Icon(Icons.account_circle_rounded,
-                                  color: Colors.grey,
-                                  size: 38),
-                              title: Text("${fname} ${lname}"),
-                              subtitle: Text("${email}",
-                                style: TextStyle(fontWeight: FontWeight.w300, fontSize: 12),),
-                              onTap: (){
 
-                              },
-                            ),
-
-                          ],
-                        ),
-
-                         */
                           );
                         }
                     );
@@ -117,7 +89,7 @@ class _SelectPatientState extends State<SelectPatient> {
 }
 
 class DetailPatient extends StatefulWidget {
-  final DocumentSnapshot detail_doc;
+  final DocumentSnapshot detail_doc;        //documents under /users/uid
   DetailPatient({this.detail_doc});
 
   @override
@@ -126,7 +98,7 @@ class DetailPatient extends StatefulWidget {
 
 class _DetailPatientState extends State<DetailPatient> {
   var ave_step_time, cadence, total_steps, correct_steps, wrong_steps;
-  var _showGraph = true;
+  var _showGraph = false;
   @override
   Widget build(BuildContext context) {
     var uid = widget.detail_doc['user_id'].toString();
@@ -163,7 +135,7 @@ class _DetailPatientState extends State<DetailPatient> {
             Visibility(
               visible: !_showGraph,
               child: Container (
-                child: Text("soon")
+                child: ViewPatientResults(uid: uid)
               ),
             ),
             Visibility(
@@ -172,38 +144,46 @@ class _DetailPatientState extends State<DetailPatient> {
                   stream: FirebaseFirestore.instance.collection('/users/'+uid+'/training/').orderBy('date', descending: true).snapshots(),
                   builder: (context, snapshot){
                     if(!snapshot.hasData){
-                      return Text("NOT POSSIBRU!");
+                      return Text("Loading data...");
                     } else if (snapshot.hasData){
                       final documents = snapshot.data.docs;
-                      return ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          itemCount: documents.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index){
-                            ave_step_time = documents[index]['ave_step_time'];
-                            cadence = documents[index]['cadence'];
-                            total_steps = documents[index]['total_steps'];
-                            correct_steps = documents[index]['correct_steps'];
-                            wrong_steps = documents[index]['wrong_steps'];
-                            Timestamp t = documents[index]['date'];
-                            DateTime d = t.toDate();
-                            return Container(
-                                margin: EdgeInsets.only(left: 10, right: 10),
-                                decoration: BoxDecoration(
-                                  //color: Colors.white,
-                                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                                ),
-                                child: ListTile(
-                                  title: Text(d.format('F j'),
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  subtitle: Text(d.format('g:i A')),
-                                )
-                            );
-                          }
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                itemCount: documents.length,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index){
+                                  ave_step_time = documents[index]['ave_step_time'];
+                                  cadence = documents[index]['cadence'];
+                                  total_steps = documents[index]['total_steps'];
+                                  correct_steps = documents[index]['correct_steps'];
+                                  wrong_steps = documents[index]['wrong_steps'];
+                                  Timestamp t = documents[index]['date'];
+                                  DateTime d = t.toDate();
+                                  return Container(
+                                      margin: EdgeInsets.only(left: 10, right: 10),
+                                      decoration: BoxDecoration(
+                                        //color: Colors.white,
+                                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                                      ),
+                                      child: ListTile(
+                                        title: Text(d.format('F j'),
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        subtitle: Text(d.format('g:i A')),
+                                      )
+                                  );
+                                }
+                            ),
+                          ],
+                        )
                       );
+
+
 
                     }
 

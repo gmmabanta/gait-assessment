@@ -16,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String _lname;
   String _errAlert = "";
   bool _error = false;
+  String _role = "patient";
 
 
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -39,10 +40,17 @@ class _LoginScreenState extends State<LoginScreen> {
         "first_name": _fname,
         "last_name": _lname,
         "user_id": user_id(),
-        "role": "patient",
+        "role": _role,
       };
 
+      //Map <String,dynamic> training_settings = {
+      //  "bpm": 55,
+      //  "duration": 10,
+      //};
+
       FirebaseFirestore.instance.collection("users").doc(user_id()).set(user_data);
+      //FirebaseFirestore.instance.collection("users").doc(user_id()).collection("training_settings").doc().set(training_settings);
+
       print("User: $userCredential");
     } on FirebaseAuthException catch(e) {
       print("Error: ${e}");
@@ -88,6 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   var _pageState = 0;
   Color _backgroundColor = Color(0xFFFF1EEEE);
+  Color _primaryColor = Colors.teal[300];
   Color _pageHeader = Colors.teal[300];
   var _headerText;
   var _height;
@@ -98,16 +107,25 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     switch(_pageState){
       case 0:
+        _primaryColor = Colors.teal[300];
         _backgroundColor = Color(0xFFFF1EEEE);
         _pageHeader = Colors.teal[300];
         _headerText = "Login";
         _height = MediaQuery.of(context).size.height*0.45;
         break;
-      default:
+      case 1:
+        _primaryColor = Colors.teal[300];
         _backgroundColor = Colors.teal[300];
         _pageHeader = Colors.white;
         _headerText = "Sign Up";
-        _height = MediaQuery.of(context).size.height*0.68;
+        _height = MediaQuery.of(context).size.height*0.70;
+        break;
+      case 2:
+        _primaryColor = Colors.blueGrey;
+        _backgroundColor = Colors.blueGrey;
+        _pageHeader = Colors.white;
+        _headerText = "Therapist Sign Up";
+        _height = MediaQuery.of(context).size.height*0.70;
         break;
     }
 
@@ -148,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           Visibility(
-                            visible: (_pageState == 1) ? true: false,
+                            visible: (_pageState == 1) | (_pageState == 2) ? true: false,
                             child: TextFormField(
                               keyboardType: TextInputType.text,
                               onChanged: (value) {
@@ -157,13 +175,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
                               },
                               decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.account_box, color: Colors.teal[300],),
+                                  prefixIcon: Icon(Icons.account_box, color: _primaryColor),
                                   labelText: 'First Name'
                               ),
                             ),
                           ),
                           Visibility(
-                            visible: (_pageState == 1) ? true: false,
+                            visible: (_pageState == 1) | (_pageState == 2) ? true: false,
                             child: TextFormField(
                               //controller: _lname,
                               keyboardType: TextInputType.text,
@@ -174,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
                               },
                               decoration: InputDecoration(
-                                  prefixIcon: Icon(Icons.account_box, color: Colors.teal[300],),
+                                  prefixIcon: Icon(Icons.account_box, color: _primaryColor),
                                   labelText: 'Last Name'
                               ),
                             ),
@@ -188,8 +206,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             },
                             decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.email_rounded, color: Colors.teal[300],),
-                                labelText: 'Email'
+                              prefixIcon: Icon(Icons.email_rounded, color: _primaryColor),
+                              labelText: 'Email',
                             ),
                           ),
                           TextFormField(
@@ -204,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             obscureText: _isObscurePW1,
                             decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.lock_rounded, color: Colors.teal[300],),
+                              prefixIcon: Icon(Icons.lock_rounded, color: _primaryColor),
                               labelText: 'Password',
                               suffixIcon: IconButton(icon: Icon(
                                   _isObscurePW1? Icons.visibility : Icons.visibility_off),
@@ -217,7 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           Visibility(
-                            visible: (_pageState == 1) ? true: false,
+                            visible: (_pageState == 1) | (_pageState == 2) ? true: false,
                             child: TextFormField(
                               //controller: _password1,
                               keyboardType: TextInputType.text,
@@ -231,7 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               obscureText: _isObscurePW2,
                               decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.lock_rounded, color: Colors.teal[300],),
+                                prefixIcon: Icon(Icons.lock_rounded, color: _primaryColor),
                                 labelText: 'Confirm Password',
                                 suffixIcon: IconButton(icon: Icon(
                                     _isObscurePW2? Icons.visibility : Icons.visibility_off),
@@ -243,6 +261,30 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
+                          ),
+                          Visibility(
+                            visible: (_pageState == 1) ? true : false,
+                            child: TextButton(
+                              child: Text("Sign up for therapists", style: TextStyle(color: Colors.grey),),
+                              onPressed: (){
+                                setState(() {
+                                  _pageState = 2;
+                                  _role = "therapist";
+                                });
+                              },
+                            )
+                          ),
+                          Visibility(
+                              visible: (_pageState == 2) ? true : false,
+                              child: TextButton(
+                                child: Text("Sign up for patients", style: TextStyle(color: Colors.grey),),
+                                onPressed: (){
+                                  setState(() {
+                                    _pageState = 1;
+                                    _role = "patient";
+                                  });
+                                },
+                              )
                           ),
                           Visibility(
                             visible: _error ? true : false,
@@ -263,7 +305,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: ElevatedButton.styleFrom(
                                       shape: new RoundedRectangleBorder(
                                           borderRadius: new BorderRadius.circular(30.0)),
-                                      side: BorderSide(color: Colors.teal[300], width: 1.5),
+                                      side: BorderSide(color: _primaryColor, width: 1.5),
                                       primary: Colors.white,
                                       elevation: 1.5,
                                       minimumSize: Size(120, 40),
@@ -277,7 +319,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onPressed: _login,
                                     style: ElevatedButton.styleFrom(
                                         shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0),),
-                                        primary: Colors.teal[300],
+                                        primary: _primaryColor,
                                         elevation: 1.5,
                                         minimumSize: Size(120, 40)
                                     ),
@@ -290,7 +332,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           Visibility(
-                            visible: (_pageState == 1) ? true: false,
+                            visible: (_pageState == 1) | (_pageState == 2) ? true: false,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: <Widget>[
@@ -303,21 +345,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: ElevatedButton.styleFrom(
                                       shape: new RoundedRectangleBorder(
                                           borderRadius: new BorderRadius.circular(30.0)),
-                                      side: BorderSide(color: Colors.teal[300], width: 1.5),
+                                      side: BorderSide(color: _primaryColor, width: 1.5),
                                       primary: Colors.white,
                                       elevation: 1.5,
                                       minimumSize: Size(120, 40),
                                     ),
                                     child: Text(
                                       "Login",
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.teal[300]),
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: _primaryColor),
                                     )
                                 ),
                                 ElevatedButton(
                                     onPressed: _createUser,
                                     style: ElevatedButton.styleFrom(
                                         shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0),),
-                                        primary: Colors.teal[300],
+                                        primary: _primaryColor,
                                         elevation: 1.5,
                                         minimumSize: Size(120, 40)
                                     ),
