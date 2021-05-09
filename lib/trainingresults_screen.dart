@@ -17,7 +17,7 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
   bool _viewCadence = false;
   bool _viewStep = false;
   bool _viewFeedback = false;
-  bool _showLogs = true;
+  //bool _showLogs = true;
   @override
   Widget build(BuildContext context) {
 
@@ -48,7 +48,7 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
           iconTheme: IconThemeData(
               color: Colors.teal[300]
           ),
-          actions: [
+          /*actions: [
             IconButton(icon: Icon(
                 _showLogs ? Icons.wysiwyg_rounded : Icons.show_chart_rounded),
                 onPressed: (){
@@ -56,7 +56,7 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
                     _showLogs = !_showLogs;
                   });
                 })
-          ],
+          ],*/
         ),
 
         backgroundColor: Color(0xFFFF1EEEE),
@@ -65,9 +65,9 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
                     future: getData(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
-                        if(!_showLogs){
-                          return Text("This is it pancit");
-                        } else {
+                        //if(!_showLogs){
+                        //  return Text("This is it pancit");
+                        //} else {
                           return Stack(children: <Widget>[
                             Container(
                               padding: EdgeInsets.all(10),
@@ -198,10 +198,10 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
                               ),
                             ),
                           ]);
-                        }
+                        //}
                       } else if (snapshot.hasData){
                           final List<QueryDocumentSnapshot> documents = snapshot.data.docs;
-                          if(!_showLogs){
+                          /*if(!_showLogs){
                           return StreamBuilder(
                               stream: FirebaseFirestore.instance.collection('/users/'+user_id()+'/training/').orderBy('date', descending: true).snapshots(),
                               builder: (context, snapshot){
@@ -242,7 +242,8 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
                                 }
                               }
                           );
-                          } else {
+                          } */
+                          //else {
                             return Stack(
                                 children: <Widget>[
                                   Container(
@@ -429,16 +430,14 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
                                                           splashRadius: 28,
                                                           onPressed: () {
                                                             setState(() {
-                                                              _viewFeedback =
-                                                              !_viewFeedback;
+                                                              _viewFeedback = !_viewFeedback;
                                                             });
                                                           }),
                                                     ),
                                                   ),
                                                   onTap: () {
                                                     setState(() {
-                                                      _viewFeedback =
-                                                      !_viewFeedback;
+                                                      _viewFeedback = !_viewFeedback;
                                                     });
                                                   },
                                                 ),
@@ -460,7 +459,7 @@ class _TrainingResultsScreenState extends State<TrainingResultsScreen> {
                                   ),
                                 ]
                             );
-                          }
+                          //}
                         }
                       }
                 ),

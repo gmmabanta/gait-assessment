@@ -58,7 +58,7 @@ class BarChartViewState extends State<BarChartView> {
                           ),
                         ),
                         const SizedBox(width: 5),
-                        Icon(IconData(61645, fontFamily: 'MaterialIcons'),
+                        Icon(Icons.circle,
                             size: 10,
                             color: Colors.teal[300]
                         )
@@ -74,7 +74,7 @@ class BarChartViewState extends State<BarChartView> {
                           ),
                         ),
                         const SizedBox(width: 5),
-                        Icon(IconData(61645, fontFamily: 'MaterialIcons'),
+                        Icon(Icons.circle,
                             size: 10,
                             color: Color(0xFFCFD8DC)
                         )

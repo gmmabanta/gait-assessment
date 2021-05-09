@@ -113,7 +113,7 @@ class _ScheduleStaffState extends State<ScheduleStaff> {
                         ),
                         child: Expanded(
                           child: StreamBuilder(
-                              stream: FirebaseFirestore.instance.collection('schedule').where('date', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(hours: 12))).where('date', isLessThanOrEqualTo: DateTime.now().add(Duration(days: 14))).orderBy('date', descending: true).snapshots(),
+                              stream: FirebaseFirestore.instance.collection('schedule').where('date', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(hours: 12))).orderBy('date', descending: true).snapshots(),
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData) {
                                   return Text("Loading");
@@ -160,38 +160,6 @@ class _ScheduleStaffState extends State<ScheduleStaff> {
                               }
                           ),
                         )
-                        /*Column(
-                          children: <Widget>[
-                            StreamBuilder(
-                                stream: FirebaseFirestore.instance.collection('schedule').where('date', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(hours: 12))).where('date', isLessThanOrEqualTo: DateTime.now().add(Duration(days: 14))).orderBy('date', descending: true).snapshots(),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Text("Loading");
-                                  } else if(snapshot.hasData){
-                                    final event_doc = snapshot.data.docs;
-                                    int docLen = event_doc.length;
-                                    return Container(child: Column(
-                                      children: [
-                                        ListView.builder(
-                                            scrollDirection: Axis.vertical,
-                                            itemCount: docLen,
-                                            shrinkWrap: true,
-                                            itemBuilder: (context, index){
-                                              Timestamp t = event_doc[index]['date'];
-                                              DateTime d = t.toDate();
-                                              return ListTile(
-                                                  title: Text("${d.format('F j')} | ${event_doc[index]['user_id']}")
-                                              );
-                                            }
-                                        )
-                                      ],
-                                    ));
-
-                                  }
-                                }
-                            ),
-                          ],
-                        ),*/
                       ),
                     ),
 
@@ -529,7 +497,8 @@ class _AddSessionState extends State<AddSession> {
                       "bpm": _bpmChoice,      //shows the thread sequencing
                       "duration": _durationChoice,     //shows the training session associated with
                       "therapist_id": auth.currentUser.uid,
-                      "done": false
+                      "done": false,
+                      "date_completed": null
                     };
                     FirebaseFirestore.instance.collection("schedule").add(schedule);
                     Navigator.pop(context);

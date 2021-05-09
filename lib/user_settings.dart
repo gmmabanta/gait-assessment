@@ -5,8 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:date_time_format/date_time_format.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gait_assessment/assignments_screen.dart';
+import 'package:gait_assessment/mainscreen.dart';
+import 'package:gait_assessment/view_patientresults.dart';
 
 String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+final FirebaseAuth auth = FirebaseAuth.instance;
 
 class UserSettings extends StatefulWidget {
   @override
@@ -14,6 +17,7 @@ class UserSettings extends StatefulWidget {
 }
 
 class _UserSettingsState extends State<UserSettings> {
+  var user_id = auth.currentUser.uid;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,20 +43,8 @@ class _UserSettingsState extends State<UserSettings> {
                   child: Text("Users",
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
                 ),
-                Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
-                    child: TextField(
-                      decoration: InputDecoration(hintText: "Search", border: InputBorder.none),
-                    )
-
-                ),
                 StreamBuilder(
-                    stream: FirebaseFirestore.instance.collection('users').snapshots(),
+                    stream: FirebaseFirestore.instance.collection('users').where('user_id', isNotEqualTo: user_id).snapshots(),
                     builder: (context, snapshot){
                       if(!snapshot.hasData){
                         return Text("Loading data...");
@@ -132,7 +124,15 @@ class DetailUser extends StatefulWidget {
 class _DetailUserState extends State<DetailUser> {
   var ave_step_time, cadence, total_steps, correct_steps, wrong_steps;
   var _showGraph = true;
+  var _showAssignments = true;
   double _textSize = 15;
+
+  bool editUserInfo = false;
+  String roleUpdate;
+  String firstName;
+  String lastName;
+  List<String> roles = ['patient', 'therapist'];
+
   @override
   Widget build(BuildContext context) {
     var uid = widget.detail_doc['user_id'].toString();
@@ -201,42 +201,144 @@ class _DetailUserState extends State<DetailUser> {
             children: [
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("User Information",
-                        style: TextStyle(fontSize: 16,color: Colors.grey, fontWeight: FontWeight.w500)),
-                    IconButton(
-                        icon: Icon(Icons.edit_rounded),
-                        onPressed: (){}
+                child: editUserInfo
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Text("User Information",
+                              style: TextStyle(fontSize: 16,color: Colors.grey, fontWeight: FontWeight.w500)),
+                          Row(
+                            children: [
+                              IconButton(
+                                  icon: Icon(Icons.save),
+                                  onPressed: (){
+                                    Map <String,dynamic> updatedUserInfo = {
+                                      "role": (roleUpdate == null) ? widget.detail_doc['role'].toString() : roleUpdate,
+                                      "first_name": (firstName == null) ? widget.detail_doc['first_name'].toString() : firstName,      //shows the thread sequencing
+                                      "last_name": (lastName == null) ? widget.detail_doc['last_name'].toString() : lastName
+                                    };
+
+                                    FirebaseFirestore.instance.collection("users").doc(uid).set(updatedUserInfo, SetOptions(merge: true));
+                                    setState(() {
+                                      editUserInfo = !editUserInfo;
+                                    });
+                                  }
+                              ),
+                              IconButton(
+                                  icon: Icon(Icons.clear),
+                                  onPressed: (){
+                                    setState(() {
+                                      editUserInfo = !editUserInfo;
+                                    });
+
+                                  }
+                              ),
+                            ],
+                          ),
+
+                        ],
+                      )
+                    : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("User Information",
+                            style: TextStyle(fontSize: 16,color: Colors.grey, fontWeight: FontWeight.w500)),
+                        IconButton(
+                            icon: Icon(Icons.edit_rounded),
+                            onPressed: (){
+                              setState(() {
+                                editUserInfo = !editUserInfo;
+                              });
+                            }
+                        )
+                      ],
                     )
-                  ],
+              ),
+              Visibility(
+                visible: !editUserInfo,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text("Name",
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
+                      Text("${widget.detail_doc['first_name'].toString()} ${widget.detail_doc['last_name'].toString()}",
+                          style: TextStyle(color: Colors.black, fontSize: _textSize)),
+                      SizedBox(height: 13,),
+                      Text("Role",
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
+                      Text("${widget.detail_doc['role'].toString()}",
+                          style: TextStyle(color: Colors.black, fontSize: _textSize)
+                      ),
+                      SizedBox(height: 13,),
+                      Text("User ID",
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
+                      Text("${widget.detail_doc['user_id'].toString()}",
+                          style: TextStyle(color: Colors.black, fontSize: _textSize)
+                      ),
+                    ],
+                  ),
                 )
               ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text("Name",
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
-                    Text("${widget.detail_doc['first_name'].toString()} ${widget.detail_doc['last_name'].toString()}",
-                        style: TextStyle(color: Colors.black, fontSize: _textSize)
+              Visibility(
+                  visible: editUserInfo,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text("First Name",
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
+                        TextFormField(
+                          //controller: firstName,
+                          initialValue: widget.detail_doc['first_name'].toString(),
+                          decoration: InputDecoration(
+                              hintStyle: TextStyle(
+                                fontSize: 14,
+                              )
+                          ),
+                          onChanged: (value){
+                            firstName = value;
+                          },
+                        ),
+                        SizedBox(height: 13,),
+                        Text("Last Name",
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
+                        TextFormField(
+                          //controller: lastName,
+                          initialValue: widget.detail_doc['last_name'].toString(),
+                        ),
+                        SizedBox(height: 13,),
+                        Text("Role",
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
+                        DropdownButtonFormField(
+                          hint: Text("${widget.detail_doc['role'].toString()}"),
+                          value: roleUpdate,
+                          items: roles.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (val) {
+                            setState(() {
+                              roleUpdate = val;
+                            });
+                          },
+                        ),
+
+                        SizedBox(height: 13,),
+                        Text("User ID",
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
+                        SizedBox(height: 13,),
+                        Text("${widget.detail_doc['user_id'].toString()}",
+                            style: TextStyle(color: Colors.black, fontSize: _textSize)
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 13,),
-                    Text("Role",
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
-                    Text("${widget.detail_doc['role'].toString()}",
-                        style: TextStyle(color: Colors.black, fontSize: _textSize)
-                    ),
-                    SizedBox(height: 13,),
-                    Text("User ID",
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
-                    Text("${widget.detail_doc['user_id'].toString()}",
-                        style: TextStyle(color: Colors.black, fontSize: _textSize)
-                    ),
-                  ],
-                ),
+                  )
               ),
               Visibility(
                 visible: (widget.detail_doc['role'].toString() == 'patient') ? true : false,
@@ -257,31 +359,9 @@ class _DetailUserState extends State<DetailUser> {
                 ),
               ),
               Visibility(
-                visible: (widget.detail_doc['role'].toString() == 'therapist') ? true : false,
-                child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Therapist Assignments",
-                                style: TextStyle(fontSize: 16,color: Colors.grey, fontWeight: FontWeight.w500)),
-                            IconButton(
-                                icon: Icon(Icons.edit_rounded),
-                                onPressed: (){}
-                            )
-                          ],
-                        ),
-                        AssignmentScreen(uid: uid)
-                      ],
-                    )
-                ),
-              ),
-              Visibility(
                 visible: !_showGraph,
                 child: Container (
-                    child: Text("soon")
+                    child: ViewPatientResults(uid: uid),
                 ),
               ),
               Visibility(
@@ -322,12 +402,40 @@ class _DetailUserState extends State<DetailUser> {
                                 );
                               }
                           );
-
                         }
-
-
                       }
                   )
+              ),
+              Visibility(
+                visible: (widget.detail_doc['role'].toString() == 'therapist') ? _showAssignments : false,
+                child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 13,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Therapist Assignments",
+                                style: TextStyle(fontSize: 16,color: Colors.grey, fontWeight: FontWeight.w500)),
+                            /*IconButton(
+                                icon: Icon(Icons.edit_rounded),
+                                onPressed: (){
+                                  setState(() {
+                                    //_showAssignments = !_showAssignments;
+                                  });
+                                }
+                            )*/
+                          ],
+                        ),
+                        //Screen(uid: uid),
+                      ],
+                    )
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                child: ListAssignments(uid: uid),
               )
 
             ],

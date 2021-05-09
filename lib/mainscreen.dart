@@ -10,6 +10,7 @@ import 'package:gait_assessment/trainingresults_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gait_assessment/select_patient.dart';
+import 'package:gait_assessment/select_patient.dart';
 import 'package:gait_assessment/therapist_calendar.dart';
 import 'package:gait_assessment/user_settings.dart';
 import 'package:gait_assessment/totalsteps_bar.dart';
@@ -364,38 +365,7 @@ class _MainScreenState extends State<MainScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    //SizedBox(height: _menuHeight,),
-                                    GestureDetector(
-                                      child: Container(
-                                          margin: EdgeInsets.only(bottom: 15, right: 15),
-                                          padding: EdgeInsets.all(20),
-                                          height: _menuHeight,
-                                          width: _menuWidth,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                                          ),
-                                          child: Align(
-                                            alignment: FractionalOffset.bottomLeft,
-                                            child: Text("Therapist Assignments",
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                  color: Colors.teal[300],
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 20
-                                              ),
-                                            ),
-                                          )
-                                      ),
-                                      onTap: () {
-                                        Navigator.push(context,
-                                          MaterialPageRoute(builder: (context)=>AssignmentScreen(
-                                              uid: snapshot.data.docs[0]['user_id'].toString()
-                                          )),
-                                        );
-                                      },
-                                    ),
-                                    SizedBox(width: _menuWidth,)
+                                    SizedBox(height: _menuHeight,),
 
                                   ],
                                 ),
@@ -445,15 +415,26 @@ class _MainScreenState extends State<MainScreen> {
                                   Text("What are you up to today?",
                                     style: TextStyle(fontSize: 15, color: Color(0xFFFB1AEAE)),
                                   ),
-                                  /*Container(
-                                        padding: EdgeInsets.all(15)
-                                    ),*/
                                 ],
                               ),
                             ),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
+                                //get patients list
+                                FutureBuilder(
+                                  future: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'patient').get(),
+                                  builder: (context, snapshot){
+                                    if(snapshot.hasData){
+                                      final docUsers = snapshot.data.docs;
+
+                                      usersList = List.generate(docUsers.length, (index) => "${docUsers[index]['user_id'].toString()}-${docUsers[index]['first_name'].toString()} ${docUsers[index]['last_name'].toString()}");
+                                      //print("DATA: ${docUsers}");
+                                      return Text("");
+                                    }
+                                    return Text("");
+                                  }
+                                ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
@@ -469,7 +450,7 @@ class _MainScreenState extends State<MainScreen> {
                                           ),
                                           child: Align(
                                             alignment: FractionalOffset.bottomLeft,
-                                            child: Text("Users Settings",
+                                            child: Text("Users",
                                               textAlign: TextAlign.left,
                                               style: TextStyle(
                                                   color: Colors.teal[300],
@@ -487,42 +468,7 @@ class _MainScreenState extends State<MainScreen> {
                                     ),
                                     GestureDetector(
                                       child: Container(
-                                        margin: EdgeInsets.only(bottom: 15),
-                                        padding: EdgeInsets.all(20),
-                                        height: _menuHeight,
-                                        width: _menuWidth,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.all(Radius.circular(18)),
-                                        ),
-                                        child: Align(
-                                          alignment: FractionalOffset.bottomLeft,
-                                          child: Text("Therapist Assignment",
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                                color: Colors.teal[300],
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 20
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        Navigator.push(context,
-                                          MaterialPageRoute(builder: (context)=>AssignmentScreen(
-                                            uid: auth.currentUser.uid.toString()
-                                          )),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      child: Container(
-                                        margin: EdgeInsets.only(right: 15, bottom: 15),
+                                        margin: EdgeInsets.only( bottom: 15),
                                         padding: EdgeInsets.all(20),
                                         height: _menuHeight,
                                         width: _menuWidth,
@@ -543,13 +489,20 @@ class _MainScreenState extends State<MainScreen> {
                                         ),
                                       ),
                                       onTap: () {
+                                        List<String>patientList = usersList;
                                         Navigator.push(context,
-                                          MaterialPageRoute(builder: (context)=>SchedulePage(
-                                            uid: snapshot.data.docs[0]['user_id'].toString()
+                                          MaterialPageRoute(builder: (context)=>ScheduleAdmin(
+                                              uid: snapshot.data.docs[0]['user_id'].toString(),
+                                              patientList: patientList,
                                           )),
                                         );
                                       },
                                     ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
                                     GestureDetector(
                                       child: Container(
                                         margin: EdgeInsets.only(bottom: 15),
@@ -750,7 +703,7 @@ class _MainScreenState extends State<MainScreen> {
                                         ),
                                         child: Align(
                                           alignment: FractionalOffset.bottomLeft,
-                                          child: Text("Summary",
+                                          child: Text("View Training Results",
                                             textAlign: TextAlign.left,
                                             style: TextStyle(
                                                 color: Colors.teal[300],

@@ -3,7 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:date_time_format/date_time_format.dart';
 import 'package:gait_assessment/view_patientresults.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gait_assessment/assignments_screen.dart';
+final FirebaseAuth auth = FirebaseAuth.instance;
+var uid = auth.currentUser.uid;
 
 class SelectPatient extends StatefulWidget {
   @override
@@ -11,7 +14,7 @@ class SelectPatient extends StatefulWidget {
 }
 
 class _SelectPatientState extends State<SelectPatient> {
-
+  bool _filterPatient = true;
   @override
   Widget build(BuildContext context) {
 
@@ -35,18 +38,70 @@ class _SelectPatientState extends State<SelectPatient> {
             SizedBox(height: 10,),
             Container(
               margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
-              child: Text("Select Patient",
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Select Patient",
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                          onPressed: (){
+                            setState(() {
+                              _filterPatient = true;
+                            });
+
+                          },
+                          style: ElevatedButton.styleFrom(
+                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10),),
+                              primary: (_filterPatient==true) ? Colors.teal[300] : Colors.grey,
+                              elevation: 0,
+                              minimumSize: Size(10, 20)
+                          ),
+                          child: Text(
+                            "All",
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                          )
+                      ),
+                      SizedBox(width: 10,),
+                      ElevatedButton(
+                          onPressed: (){
+                            setState(() {
+                              _filterPatient = false;
+                            });
+
+                          },
+                          style: ElevatedButton.styleFrom(
+                              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10),),
+                              primary: (_filterPatient==false) ? Colors.teal[300] : Colors.grey,
+                              elevation: 0,
+                              minimumSize: Size(10, 20)
+                          ),
+                          child: Text(
+                            "Assigned",
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                          )
+                      ),
+                    ],
+                  )
+                ],
+              )
+
             ),
             StreamBuilder(
-                stream: FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'patient').snapshots(),
+                stream: _filterPatient 
+                    ? FirebaseFirestore.instance.collection('users').where('role', isEqualTo: 'patient').snapshots() // all patients
+                    : FirebaseFirestore.instance.collection('users').doc(uid).collection('assignments').snapshots(), // patients for specific therapist only
                 builder: (context, snapshot){
                   if(!snapshot.hasData){
                     return Text("Loading data...");
                   } else if (snapshot.hasData){
                     final documents = snapshot.data.docs;
                     int docLen = documents.length;
-                    return ListView.builder(
+                    return  _filterPatient
+                        ? ListView.builder(
                         scrollDirection: Axis.vertical,
                         itemCount: docLen,
                         shrinkWrap: true,
@@ -78,7 +133,8 @@ class _SelectPatientState extends State<SelectPatient> {
 
                           );
                         }
-                    );
+                    )
+                        : ListAssignments(uid: uid);
                   }
                 })
           ],
