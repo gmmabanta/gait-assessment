@@ -593,10 +593,14 @@ class _TrainingProgressState extends State<TrainingProgress> {
                             if(_play){
                               //insert sending data code
                               Future.delayed(const Duration(milliseconds: 536), () {
-                                audioCache.play('${_bpmChoice}'+'bpm_'+'${_trainingDuration}'+'min.mp3');
+                                //audioCache.play('${_bpmChoice}'+'bpm_'+'${_trainingDuration}'+'min.mp3');
+                                //audioCache.play('49'+'bpm_'+'10'+'min.mp3');
+                                audioCache.play('60'+'bpm_'+'1'+'min.mp3');
                                 //audioCache.play('metronome_test.mp3');
                                 //print('1/${_bpmChoice}/${_trainingDuration}');
-                                _sendMessage('1/${_bpmChoice}/${_trainingDuration}', selectedDevice);
+                                //_sendMessage('1/${_bpmChoice}/${_trainingDuration}', selectedDevice);
+                                _sendMessage('1/49/10', selectedDevice);
+
                                 _play = false;
 
                               });
