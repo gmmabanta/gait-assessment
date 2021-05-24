@@ -64,112 +64,104 @@ class _ScheduleStaffState extends State<ScheduleStaff> {
       ),
       backgroundColor: Color(0xFFFF1EEEE),
       body: Container(
-        child: Stack(
-          //crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                child: TableCalendar(
-                  availableGestures: AvailableGestures.horizontalSwipe,
-                  calendarController: _calendarController,
-                  calendarStyle: CalendarStyle(
-                      selectedColor: Colors.teal[300],
-                      todayColor: Colors.transparent,
-                      todayStyle: TextStyle(color: Colors.teal[300]),
-                      weekendStyle: TextStyle(color: Colors.blueGrey[400]),
-                      outsideStyle: TextStyle(color: Colors.grey[300]),
-                      outsideWeekendStyle: TextStyle(color: Colors.grey[300]),
-                      markersColor: Colors.teal[300]
-                  ),
-                  daysOfWeekStyle: DaysOfWeekStyle(
-                      weekendStyle: TextStyle().copyWith(color: Colors.blueGrey[400])
-                  ),
-                  headerStyle: HeaderStyle(
-                      formatButtonVisible: false,
-                      centerHeaderTitle: true
-                  ),
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+              height: calendarHeight+10,
+              child: TableCalendar(
+                availableGestures: AvailableGestures.horizontalSwipe,
+                calendarController: _calendarController,
+                calendarStyle: CalendarStyle(
+                    selectedColor: Colors.teal[300],
+                    todayColor: Colors.transparent,
+                    todayStyle: TextStyle(color: Colors.teal[300]),
+                    weekendStyle: TextStyle(color: Colors.blueGrey[400]),
+                    outsideStyle: TextStyle(color: Colors.grey[300]),
+                    outsideWeekendStyle: TextStyle(color: Colors.grey[300]),
+                    markersColor: Colors.teal[300]
+                ),
+                daysOfWeekStyle: DaysOfWeekStyle(
+                    weekendStyle: TextStyle().copyWith(color: Colors.blueGrey[400])
+                ),
+                headerStyle: HeaderStyle(
+                    formatButtonVisible: false,
+                    centerHeaderTitle: true
                 ),
               ),
             ),
-            Container(
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: calendarHeight,),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child:  Container(
-                        margin: EdgeInsets.symmetric(horizontal: 5),
-                        padding: EdgeInsets.only(top: 10),
-                        clipBehavior: Clip.hardEdge,
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height - calendarHeight-80,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30),
-                            topRight: Radius.circular(30),
-                          ),
-                        ),
-                        child: Expanded(
-                          child: StreamBuilder(
-                              stream: FirebaseFirestore.instance.collection('schedule').where('date', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(hours: 12))).orderBy('date', descending: true).snapshots(),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return Text("Loading");
-                                } else if(snapshot.hasData){
-                                  final event_doc = snapshot.data.docs;
-                                  int docLen = event_doc.length;
-                                  return Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 10),
-                                      child: ListView.builder(
-                                          clipBehavior: Clip.hardEdge,
-                                          scrollDirection: Axis.vertical,
-                                          itemCount: docLen,
-                                          shrinkWrap: true,
-                                          itemBuilder: (context, index){
-                                            Timestamp t = event_doc[index]['date'];
-                                            DateTime d = t.toDate();
-                                            return ListTile(
-                                                title: Text("${d.format('F j')} | ${patientMap[ event_doc[index]['user_id'] ]}"),
-                                              leading: Icon(event_doc[index]['done'] ? Icons.check_box_outlined : Icons.check_box_outline_blank_rounded, color: Colors.teal[300]),
-                                              trailing: Row(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                  IconButton(icon: Icon(Icons.delete_outline_rounded), color: Colors.redAccent[300],
-                                                      onPressed: () async {
-                                                        await FirebaseFirestore.instance.runTransaction((Transaction myTransaction) async {
-                                                          await myTransaction.delete(event_doc[index].reference);
-                                                        });
-                                                      }),
-                                                  IconButton(icon: Icon(Icons.edit_rounded), color: Colors.teal[300],
-                                                    onPressed: ()  {
-                                                      Navigator.push( context,
-                                                        MaterialPageRoute(builder: (context)=>UpdateSession(event_doc: event_doc, index: index,))
-                                                      );
-                                                    }
-                                                  ),
-                                                ],
-                                              )
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 5),
+                padding: EdgeInsets.only(top: 10),
+                clipBehavior: Clip.hardEdge,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height - calendarHeight-90,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: StreamBuilder(
+                      stream: FirebaseFirestore.instance.collection('schedule').where('date', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(hours: 12))).orderBy('date', descending: true).snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Text("Loading");
+                        } else if(snapshot.hasData){
+                          final event_doc = snapshot.data.docs;
+                          int docLen = event_doc.length;
+                          return Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: ListView.builder(
+                                  clipBehavior: Clip.hardEdge,
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: docLen,
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index){
+                                    Timestamp t = event_doc[index]['date'];
+                                    DateTime d = t.toDate();
+                                    return ListTile(
+                                        title: Text("${d.format('F j')} | ${patientMap[ event_doc[index]['user_id'] ]}"),
+                                        leading: Icon(event_doc[index]['done'] ? Icons.check_box_outlined : Icons.check_box_outline_blank_rounded, color: Colors.teal[300]),
+                                        trailing: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(icon: Icon(Icons.delete_outline_rounded), color: Colors.redAccent[300],
+                                                onPressed: () async {
+                                                  await FirebaseFirestore.instance.runTransaction((Transaction myTransaction) async {
+                                                    await myTransaction.delete(event_doc[index].reference);
+                                                  });
+                                                }),
+                                            IconButton(icon: Icon(Icons.edit_rounded), color: Colors.teal[300],
+                                                onPressed: ()  {
+                                                  Navigator.push( context,
+                                                      MaterialPageRoute(builder: (context)=>UpdateSession(event_doc: event_doc, index: index,))
+                                                  );
+                                                }
+                                            ),
+                                          ],
+                                        )
 
-                                            );
-                                          }
-                                      )
-                                  );
-                                }
-                              }
-                          ),
-                        )
-                      ),
-                    ),
+                                    );
+                                  }
+                              )
+                          );
+                        }
+                      }
+                  ),
+                ),
+              ),
 
-
-                  ],
-                )
             ),
-          ],
-        ),
-      ),
+          ]
+        )
+      )
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import 'package:date_time_format/date_time_format.dart';
@@ -151,7 +151,7 @@ class LineChartSample1State extends State<LineChartSample1> {
 
            */
           //getTitles: (value){
-          //  generateYTitles(documents, 'ave_step_time', value);
+          //  return generateYTitles(documents, 'ave_step_time', value);
           //},
           margin: 10,
           reservedSize: 15,

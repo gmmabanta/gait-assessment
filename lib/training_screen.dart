@@ -592,14 +592,19 @@ class _TrainingProgressState extends State<TrainingProgress> {
 
                             if(_play){
                               //insert sending data code
+
                               Future.delayed(const Duration(milliseconds: 536), () {
-                                //audioCache.play('${_bpmChoice}'+'bpm_'+'${_trainingDuration}'+'min.mp3');
+                                if(_bpmChoice == null || _trainingDuration == null){
+                                  _bpmChoice = 49;
+                                  _trainingDuration = 10;
+                                }
+                                audioCache.play('${_bpmChoice}'+'bpm_'+'${_trainingDuration}'+'min.mp3');
                                 //audioCache.play('49'+'bpm_'+'10'+'min.mp3');
-                                audioCache.play('60'+'bpm_'+'1'+'min.mp3');
+                                //audioCache.play('60'+'bpm_'+'1'+'min.mp3');
                                 //audioCache.play('metronome_test.mp3');
                                 //print('1/${_bpmChoice}/${_trainingDuration}');
-                                //_sendMessage('1/${_bpmChoice}/${_trainingDuration}', selectedDevice);
-                                _sendMessage('1/49/10', selectedDevice);
+                                _sendMessage('1/${_bpmChoice}/${_trainingDuration}', selectedDevice);
+                                //_sendMessage('1/49/10', selectedDevice);
 
                                 _play = false;
 
@@ -609,68 +614,88 @@ class _TrainingProgressState extends State<TrainingProgress> {
                                   _sendMessage("2", selectedDevice);
                                   var uid = user_id();
 
-
-                                  Map <String,dynamic> training_data= {
-                                    "date": DateTime.now(),
-                                    "user_id": uid,
-                                    "total_steps":jsonData['total_steps'].toInt(),
-                                    "correct_steps":jsonData['correct_steps'].toInt(),
-                                    "wrong_steps":jsonData['wrong_steps'].toInt(),
-                                    "cadence":jsonData['cadence'],
-                                    "ave_step_time":jsonData['ave_step_time'].toInt(),
-                                  };
-
-                                  var training = FirebaseFirestore.instance.collection("users").doc(uid).collection("training");
-                                  training.add(training_data).then((value) async {
-                                    //print("This is the data ${value.path}");
-                                    Map <String,dynamic> feedback = {
-                                      "date": DateTime.now(),
-                                      "patient_id": uid,
-                                      "therapist_id":"",
-                                      "therapist_name":"",
-                                      "parent_id":value.id,       //shows the thread sequencing
-                                      "session_id":value.id,                 //shows the training session associated with
-                                      "content":"",
-                                    };
-                                    FirebaseFirestore.instance.collection("users").doc(uid).collection("feedback").doc(value.id).set(feedback);
-
-                                    print("SCHED DOC: ${docSched}");
-                                    Map <String,dynamic> updatedData = {
-                                      "date_completed": DateTime.now(),
-                                      "bpm": _bpmChoice,      //shows the thread sequencing
-                                      //"therapist_id": auth.currentUser.uid,
-                                      "done": true
-                                    };
-
-                                    var reference = docSched.toString();
-                                    var path = "";
-                                    print("REFERENCE: ${reference}");
-                                    //DocumentReference(schedule/9wHBm4kVpsBFRc1lZQqA)
-
-                                    for(var i=27; i<reference.length-1; i++){
-                                      path = path + reference[i].toString();
-                                    }
-                                    print('PATH: ${path}');
-
-                                    FirebaseFirestore.instance.collection("schedule").doc(path).set(updatedData);
-
-                                  });
+                                  if(jsonData != null){
+                                    return showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text("Finished training"),
+                                        content: Text("Here are your results:\nTotal Steps:${jsonData['total_steps'].toInt()}\nCorrect Steps:${jsonData['correct_steps'].toInt()}\nWrong Steps:${jsonData['wrong_steps'].toInt()}\nCadence: ${jsonData['cadence']}\nAve Step Time: ${jsonData['ave_step_time']}"),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.of(context).pop();
+                                              selectedDevice =
+                                              await Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) {
 
 
+                                                    Map <String,dynamic> training_data= {
+                                                      "date": DateTime.now(),
+                                                      "user_id": uid,
+                                                      "total_steps":jsonData['total_steps'].toInt(),
+                                                      "correct_steps":jsonData['correct_steps'].toInt(),
+                                                      "wrong_steps":jsonData['wrong_steps'].toInt(),
+                                                      "cadence":jsonData['cadence'],
+                                                      "ave_step_time":jsonData['ave_step_time'].toInt(),
+                                                    };
+
+                                                    var training = FirebaseFirestore.instance.collection("users").doc(uid).collection("training");
+                                                    training.add(training_data).then((value) async {
+                                                      //print("This is the data ${value.path}");
+                                                      Map <String,dynamic> feedback = {
+                                                        "date": DateTime.now(),
+                                                        "patient_id": uid,
+                                                        "therapist_id":"",
+                                                        "therapist_name":"",
+                                                        "parent_id":value.id,       //shows the thread sequencing
+                                                        "session_id":value.id,                 //shows the training session associated with
+                                                        "content":"",
+                                                      };
+                                                      FirebaseFirestore.instance.collection("users").doc(uid).collection("feedback").doc(value.id).set(feedback);
+
+                                                      //print("SCHED DOC: ${docSched}");
+                                                      Map <String,dynamic> updatedData = {
+                                                        "date_completed": DateTime.now(),
+                                                        "bpm": _bpmChoice,      //shows the thread sequencing
+                                                        //"therapist_id": auth.currentUser.uid,
+                                                        "done": true
+                                                      };
+
+                                                      var reference = docSched.toString();
+                                                      var path = "";
+                                                      print("REFERENCE: ${reference}");
+                                                      //DocumentReference(schedule/9wHBm4kVpsBFRc1lZQqA)
+
+                                                      for(var i=27; i<reference.length-1; i++){
+                                                        path = path + reference[i].toString();
+                                                      }
+                                                      print('PATH: ${path}');
+
+                                                      FirebaseFirestore.instance.collection("schedule").doc(path).set(updatedData);
+
+                                                    });
+
+                                                    //FirebaseFirestore.instance.runTransaction((Transaction myTransaction)  {
+                                                    //  myTransaction.update(docSched, updatedData);
+                                                    //});
 
 
-                                  //FirebaseFirestore.instance.runTransaction((Transaction myTransaction)  {
-                                  //  myTransaction.update(docSched, updatedData);
-                                  //});
-
-
-
-
-                                  Future.delayed(const Duration(seconds: 1), () {
-                                    jsonData = '';
-                                    Navigator.of(context).pop();
-                                  });
-
+                                                    Future.delayed(const Duration(seconds: 1), () {
+                                                      jsonData = '';
+                                                      Navigator.of(context).pop();
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                            child: Text("Finish",
+                                              style: TextStyle(color: Colors.teal[300]),),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
                                 } else {
                                   advancedPlayer.stop();
                                   _play = true;
@@ -715,15 +740,15 @@ class _TrainingProgressState extends State<TrainingProgress> {
                     .orderBy('date', descending: false).snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return Text("...");
+                    //return Text("...");
+                    return Text(" ");
+
                   } else if(snapshot.hasData){
 
                     final document = snapshot.data.docs;
                     _bpmChoice = document[0]['bpm'];
                     _trainingDuration = document[0]['duration'];
                     docSched = document[0].reference.id;
-
-                    return Text("${_bpmChoice} | ${_trainingDuration}");
                     if(_endTraining){
                       if(document == null){
 
@@ -737,6 +762,10 @@ class _TrainingProgressState extends State<TrainingProgress> {
                       }
 
                     }
+                    //return Text("${_bpmChoice} | ${_trainingDuration}");
+                    return Text(" ");
+
+
                   }
                 }
 
@@ -1016,7 +1045,7 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
               subtitle: Text(_bluetoothState.toString()),
               trailing: IconButton(
                 color: Colors.grey,
-                icon: Icon(Icons.settings),
+                icon: Icon(Icons.info_outline_rounded),
                 onPressed: (){
                   FlutterBluetoothSerial.instance.openSettings();
                 },

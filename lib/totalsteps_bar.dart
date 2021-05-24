@@ -136,7 +136,7 @@ class BarChartViewState extends State<BarChartView> {
               correctN = "correct: ${documents[groupIndex]['correct_steps'].toString()}";
               wrongN = "wrong: ${documents[groupIndex]['wrong_steps'].toString()}";
               return BarTooltipItem(
-                  ((documents[groupIndex]['correct_steps']/documents[groupIndex]['total_steps'])*100).toInt().toString() + "%",
+                  (("Total steps: "+documents[groupIndex]['total_steps'].toString()+ "\n"+ documents[groupIndex]['correct_steps']/documents[groupIndex]['total_steps'])*100).toString() + "%",
                   TextStyle(color: Colors.white));
             }),
         touchCallback: (barTouchResponse) {

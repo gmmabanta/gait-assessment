@@ -49,6 +49,8 @@ class _MainScreenState extends State<MainScreen> {
     _menuHeight = MediaQuery.of(context).size.height*0.30;
     _menuWidth = MediaQuery.of(context).size.width*0.42;
     var usersList;
+    var usersMasterList;
+
 
     return Container(
       child: StreamBuilder(
@@ -427,6 +429,7 @@ class _MainScreenState extends State<MainScreen> {
                                   builder: (context, snapshot){
                                     if(snapshot.hasData){
                                       final docUsers = snapshot.data.docs;
+                                      usersMasterList = List.generate(docUsers.length, (index) => "${docUsers[index]['first_name']} ${docUsers[index]['last_name']}\n(${docUsers[index]['user_id']})");
 
                                       usersList = List.generate(docUsers.length, (index) => "${docUsers[index]['user_id'].toString()}-${docUsers[index]['first_name'].toString()} ${docUsers[index]['last_name'].toString()}");
                                       //print("DATA: ${docUsers}");
@@ -491,10 +494,12 @@ class _MainScreenState extends State<MainScreen> {
                                       onTap: () {
                                         List<String>patientList = usersList;
                                         Navigator.push(context,
-                                          MaterialPageRoute(builder: (context)=>ScheduleAdmin(
-                                              uid: snapshot.data.docs[0]['user_id'].toString(),
-                                              patientList: patientList,
-                                          )),
+                                          MaterialPageRoute(builder: (context)=>ScheduleStaff(patientList: usersMasterList)
+                                              //ScheduleAdmin(
+                                              //uid: snapshot.data.docs[0]['user_id'].toString(),
+                                              //patientList: patientList,
+                                              //)
+                                          ),
                                         );
                                       },
                                     ),

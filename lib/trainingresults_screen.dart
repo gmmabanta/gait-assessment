@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gait_assessment/cadence_graph.dart';
 import 'package:gait_assessment/therapist_feedback.dart';
 import 'package:gait_assessment/totalsteps_bar.dart';
-import 'package:date_time_format/date_time_format.dart';
+//import 'package:date_time_format/date_time_format.dart';
 
 class TrainingResultsScreen extends StatefulWidget {
   @override
