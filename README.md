@@ -42,6 +42,16 @@ Minimum requirement: ```Android v8.0 (Android Oreo)```
 
 # Usage
 
+## Packages
+
+Plugins are shown in pubspec.yaml file. A list of the plugins and their uses are summarized below:
+
+| Plugin Name  | Description |
+| ------------- | ------------- |
+| ![flutter_bluetooth_serial](https://pub.dev/packages/flutter_bluetooth_serial)  | Implementation of Bluetooth on the device  |
+| ![audioplayers](https://pub.dev/packages/audioplayers)  | Plays local audio files from the application  |
+
+
 ## Languages and Tools
 
 <p align="left"> <a href="https://developer.android.com" target="_blank"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/android/android-original-wordmark.svg" alt="android" width="40" height="40"/> </a> <a href="https://firebase.google.com/" target="_blank"> <img src="https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg" alt="firebase" width="40" height="40"/> </a> <a href="https://flutter.dev" target="_blank"> <img src="https://www.vectorlogo.zone/logos/flutterio/flutterio-icon.svg" alt="flutter" width="40" height="40"/> </a> </p>
