@@ -10,9 +10,12 @@ This is an application to assess the walking abilities of Parkinson's Disease pa
 # Languages and Tools
 
 
-# Demo-Preview
+# Demo Preview
 
-![Training Screen - Play](/readme-images/Play-app.jpg)
+| First Header  | Second Header |
+| ------------- | ------------- |
+| ![Menu - Patient](/readme-images/Menu - Patient.jpg)  | Content Cell  |
+| Content Cell  | Content Cell  |
 
 # Table of contents
 
