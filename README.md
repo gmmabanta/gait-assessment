@@ -48,8 +48,8 @@ Plugins are shown in pubspec.yaml file. A list of the plugins and their uses are
 
 | Plugin Name  | Description |
 | ------------- | ------------- |
-| ![flutter_bluetooth_serial](https://pub.dev/packages/flutter_bluetooth_serial)  | Implementation of Bluetooth on the device  |
-| ![audioplayers](https://pub.dev/packages/audioplayers)  | Plays local audio files from the application  |
+| [flutter_bluetooth_serial](https://pub.dev/packages/flutter_bluetooth_serial)  | Implementation of Bluetooth on the device  |
+| [audioplayers](https://pub.dev/packages/audioplayers)  | Plays local audio files from the application  |
 
 
 ## Languages and Tools
