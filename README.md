@@ -12,7 +12,7 @@ This is an application to assess the walking abilities of Parkinson's Disease pa
 
 # Demo-Preview
 
-![Training Screen](https://drive.google.com/file/d/135hls-NK8_iEfNvnvJW_-dCDOdAsZZU6/view?usp=sharing)
+![Training Screen - Play](/readme-images/Play-app.jpg)
 
 # Table of contents
 
