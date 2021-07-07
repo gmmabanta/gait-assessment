@@ -123,7 +123,7 @@ class LineChartSample1State extends State<LineChartSample1> {
 
         ),
         leftTitles: SideTitles(
-          interval: 10,
+          interval: 0.20,
           showTitles: true,
           getTextStyles: (value) => const TextStyle(
             color: Colors.blueGrey,
@@ -275,6 +275,22 @@ class LineChartSample1State extends State<LineChartSample1> {
       }
     });
 
+    final List<FlSpot> bpmData = List.generate((documents == null) ? 1 : documents.length, (index) {
+      if(documents == null){
+        return FlSpot(0, 0);
+      } else {
+          switch(documents[index]['bpm'].toInt()){
+            case 49:
+              return FlSpot(index.toDouble(), 1.224);
+            case 55:
+              return FlSpot(index.toDouble(), 1.09);
+            case 60:
+              return FlSpot(index.toDouble(), 1);;
+          }
+        //return FlSpot(index.toDouble(), documents[index]['bpm'].toDouble());
+      }
+    });
+
     return [
       LineChartBarData(
         spots: trainingData,
@@ -287,6 +303,19 @@ class LineChartSample1State extends State<LineChartSample1> {
         dotData: FlDotData(
             show: true
         ),
+      ),
+      LineChartBarData(
+        spots: bpmData,
+        //spots: dummyData2,
+        //spots: generateData(documents),
+        colors: [
+          Colors.blueGrey.shade300
+        ],
+        barWidth: 1,
+        dotData: FlDotData(
+            show: false
+        ),
+        isCurved: true
       ),
     ];
   }

@@ -87,7 +87,7 @@ class _SchedulePageState extends State<SchedulePage> {
                     scrollDirection: Axis.vertical,
                     child: StreamBuilder(
                         stream: FirebaseFirestore.instance.collection('schedule')
-                            .where('date', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(hours: 12)))
+                            .where('date', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(days: 2)))
                             .where('date', isLessThanOrEqualTo: DateTime.now().add(Duration(days: 7)))
                             .where('user_id', isEqualTo: widget.uid)
                             .orderBy('date', descending: true).snapshots(),
@@ -108,7 +108,7 @@ class _SchedulePageState extends State<SchedulePage> {
                                       Timestamp t = event_doc[index]['date'];
                                       DateTime d = t.toDate();
                                       return ListTile(
-                                        title: Text("${d.format('F j')}  |   ${event_doc[index]['duration']} mins"),
+                                        title: Text("${d.format('F j')} | ${event_doc[index]['duration']} mins, ${event_doc[index]['bpm']} bpm"),
                                         leading: Icon(event_doc[index]['done'] ? Icons.check_box_outlined : Icons.check_box_outline_blank_rounded, color: Colors.teal[300]),
 
                                       );

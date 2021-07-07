@@ -92,7 +92,6 @@ class _TherapistFeedbackState extends State<TherapistFeedback> {
                                               ),
                                               trailing: IconButton(icon: Icon(
                                                 Icons.check_rounded, color: Colors.teal[300], size: 28,),
-                                                //@TODO: Update feedback of therapist when pressing edit (for now, triggered by long press)
                                                 onPressed: (){
                                                   setState(() {
                                                     _editFeedback[index] = !_editFeedback[index];
@@ -115,7 +114,7 @@ class _TherapistFeedbackState extends State<TherapistFeedback> {
                                           : ListTile(
                                           leading: Icon(Icons.account_circle_rounded, size: 35),
                                           title: (xlabel == null) ? Text("Loading feedback...") : Text("${xlabel} | ${feedback[index]['therapist_name'].toString()}"),
-                                          subtitle: (xlabel == null) ? Text("") : (feedback[index]['content'] == "") ? Text("No feedback given yet") : Text("${feedback[index]['content'].toString()}"),
+                                          subtitle: (xlabel == null) ? Text("") : (feedback[index]['content'] == "") ? Text("Press this to check feedback") : Text("${feedback[index]['content'].toString()}"),
                                           onTap: (){
                                             setState(() {
                                               if(_showComment[index] == true){
@@ -123,7 +122,7 @@ class _TherapistFeedbackState extends State<TherapistFeedback> {
                                               } else if (_showComment[index] == false){
                                                 _showComment[index] = true;
                                               }
-                                              print("This is _showCOmment${index}: ${_showComment}");
+                                              //print("This is _showCOmment${index}: ${_showComment}");
                                               session_id = feedback[index]['session_id'];
 
                                             });
@@ -140,7 +139,15 @@ class _TherapistFeedbackState extends State<TherapistFeedback> {
                                               future: FirebaseFirestore.instance.collection("users").doc(uid).collection("feedback").doc(session_id).collection("comment").orderBy('date', descending: false).get(),
                                               builder: (context, snapshot){
                                                 if(!snapshot.hasData){
-                                                  return SizedBox(height: 1,);
+                                                  return ListView(
+                                                    scrollDirection: Axis.vertical,
+                                                    children: [
+                                                      SizedBox(height: 1,),
+                                                      ListTile(
+                                                        title: Text("No feedback yet"),
+                                                      ),
+                                                    ],
+                                                  );
                                                 } else if (snapshot.hasData){
                                                   var doc = snapshot.data.docs;
                                                   return ListView.builder(

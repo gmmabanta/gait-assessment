@@ -1,10 +1,10 @@
 # gait_assessment
 
-This is an application to assess the walking/gait abilities of Parkinson's Disease patients
+This is an application to assess the walking abilities of Parkinson's Disease patients.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is a Gait.
 
 A few resources to get you started if this is your first Flutter project:
 

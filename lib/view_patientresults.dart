@@ -19,7 +19,7 @@ class ViewPatientResults extends StatefulWidget {
 
 class _ViewPatientResultsState extends State<ViewPatientResults> {
 
-  bool _viewAveStepTime = false;
+  //bool _viewAveStepTime = false;
   bool _viewCadence = false;
   bool _viewStep = false;
   bool _viewFeedback = false;
@@ -44,21 +44,21 @@ class _ViewPatientResultsState extends State<ViewPatientResults> {
                       margin: EdgeInsets.all(5),
                       child: Column(
                         children: <Widget>[
-                          GestureDetector(
+                          /*GestureDetector(
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               child: ListTile(
                                 dense: true,
-                                title: Text('Average Step Time',
+                                title: Text('Average Step Time (s)',
                                   style: TextStyle(
-                                      color: Colors.blueGrey,
+                                      color: Colors.black,
                                       fontWeight: FontWeight.w400,
                                       fontSize: 16
                                   ),
                                 ),
                                 trailing: IconButton(
                                     icon: Icon(_viewAveStepTime ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-                                    color: Colors.blueGrey,
+                                    color: Colors.black,
                                     splashRadius: 28,
                                     onPressed: (){
                                     }),
@@ -67,22 +67,22 @@ class _ViewPatientResultsState extends State<ViewPatientResults> {
                             onTap: (){
                             },
                           ),
-                          Divider(height: 2, color: Colors.grey,),
+                          Divider(height: 2, color: Colors.grey,),*/
                           GestureDetector(
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               child: ListTile(
                                 dense: true,
-                                title: Text('Cadence',
+                                title: Text('Step Data',
                                   style: TextStyle(
-                                      color: Colors.blueGrey,
+                                      color: Colors.black,
                                       fontWeight: FontWeight.w400,
                                       fontSize: 16
                                   ),
                                 ),
                                 trailing: IconButton(
                                     icon: Icon(_viewCadence ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-                                    color: Colors.blueGrey,
+                                    color: Colors.black,
                                     splashRadius: 28,
                                     onPressed: (){
                                       setState(() {
@@ -101,16 +101,16 @@ class _ViewPatientResultsState extends State<ViewPatientResults> {
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               child: ListTile(
                                 dense: true,
-                                title: Text('Step Data',
+                                title: Text('Cadence (steps/min)',
                                   style: TextStyle(
-                                      color: Colors.blueGrey,
+                                      color: Colors.black,
                                       fontWeight: FontWeight.w400,
                                       fontSize: 16
                                   ),
                                 ),
                                 trailing: IconButton(
                                     icon: Icon(_viewCadence ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-                                    color: Colors.blueGrey,
+                                    color: Colors.black,
                                     splashRadius: 28,
                                     onPressed: (){
                                       setState(() {
@@ -173,12 +173,12 @@ class _ViewPatientResultsState extends State<ViewPatientResults> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
-                                  GestureDetector(
+                                  /*GestureDetector(
                                     child: Container(
                                       padding: EdgeInsets.symmetric(horizontal: 5),
                                       child: ListTile(
                                         dense: true,
-                                        title: Text('Average Step Time',
+                                        title: Text('Average Step Time (s)',
                                           style: TextStyle(
                                               color: Colors.black,
                                               fontWeight: FontWeight.w400,
@@ -204,49 +204,117 @@ class _ViewPatientResultsState extends State<ViewPatientResults> {
                                   ),
                                   Visibility(
                                       visible: _viewAveStepTime,
-                                      child: LineChartSample1(document: documents)
+                                      child: Column(
+                                        children: [
+                                          LineChartSample1(document: documents),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  Container(
+                                                      padding: EdgeInsets.symmetric(horizontal: 10),
+                                                      child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: <Widget>[
+                                                            Row(
+                                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                              children: <Widget>[
+                                                                Column(
+                                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                                    children: [
+                                                                      Text("Ideal Step Time:",
+                                                                        style: TextStyle(
+                                                                            color: Colors.black87,
+                                                                            fontWeight: FontWeight.w400,
+                                                                            fontSize: 10
+                                                                        ),
+                                                                      ),
+                                                                      Text("49 BPM: 1.224s",
+                                                                        style: TextStyle(
+                                                                            color: Colors.black87,
+                                                                            fontWeight: FontWeight.w400,
+                                                                            fontSize: 10
+                                                                        ),
+                                                                      ),
+                                                                      Text("55 BPM: 1.09s",
+                                                                        style: TextStyle(
+                                                                            color: Colors.black87,
+                                                                            fontWeight: FontWeight.w400,
+                                                                            fontSize: 10
+                                                                        ),
+                                                                      ),
+                                                                      Text("60 BPM: 1s",
+                                                                        style: TextStyle(
+                                                                            color: Colors.black87,
+                                                                            fontWeight: FontWeight.w400,
+                                                                            fontSize: 10
+                                                                        ),
+                                                                      ),
+                                                                    ]
+                                                                ),
+                                                                SizedBox(width: 100),
+                                                                Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                                  children: <Widget>[
+                                                                    Row(
+                                                                      children: <Widget>[
+                                                                        Text("Ave Step Time",
+                                                                          style: TextStyle(
+                                                                              color: Colors.black87,
+                                                                              fontWeight: FontWeight.w400,
+                                                                              fontSize: 10
+                                                                          ),
+                                                                        ),
+                                                                        const SizedBox(width: 5),
+                                                                        Icon(Icons.circle,
+                                                                            size: 10,
+                                                                            color: Colors.teal[300]
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                    Row(
+                                                                      children: <Widget>[
+                                                                        Text("Ideal Step Time",
+                                                                          style: TextStyle(
+                                                                              color: Colors.black87,
+                                                                              fontWeight: FontWeight.w400,
+                                                                              fontSize: 10
+                                                                          ),
+                                                                        ),
+                                                                        const SizedBox(width: 5),
+                                                                        Icon(Icons.circle,
+                                                                            size: 10,
+                                                                            color: Colors.blueGrey.shade300
+
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                )
+                                                              ],
+                                                            ),
+                                                            const SizedBox(height: 10),
+                                                          ]
+                                                      )
+                                                  )
+
+                                                ],
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      )
                                   ),
-                                  Divider(height: 2, color: Colors.grey,indent: 15,endIndent: 15,),
+                                  Divider(height: 2, color: Colors.grey,indent: 15,endIndent: 15,),*/
                                   GestureDetector(
                                     child: Container(
                                       padding: EdgeInsets.symmetric(horizontal: 5),
                                       child: ListTile(
                                         dense: true,
-                                        title: Text('Cadence',
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 16
-                                          ),
-                                        ),
-                                        trailing: IconButton(
-                                            icon: Icon(_viewCadence ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-                                            color: Colors.black,
-                                            splashRadius: 28,
-                                            onPressed: (){
-                                              setState(() {
-                                                _viewCadence = !_viewCadence;
-                                              });
-                                            }),
-                                      ),
-                                    ),
-                                    onTap: (){
-                                      setState(() {
-                                        _viewCadence = !_viewCadence;
-                                      });
-                                    },
-                                  ),
-                                  Visibility(
-                                      visible: _viewCadence,
-                                      child: CadenceGraph(document: documents)
-                                  ),
-                                  Divider(height: 2, color: Colors.grey,indent: 15,endIndent: 15,),
-                                  GestureDetector(
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 5),
-                                      child: ListTile(
-                                        dense: true,
-                                        title: Text('Step Data',
+                                        title: Text('Step Percentage (%)',
                                           style: TextStyle(
                                               color: Colors.black,
                                               fontWeight: FontWeight.w400,
@@ -273,6 +341,40 @@ class _ViewPatientResultsState extends State<ViewPatientResults> {
                                   Visibility(
                                     visible: _viewStep,
                                     child: BarChartView(document: documents),
+                                  ),
+                                  Divider(height: 2, color: Colors.grey,indent: 15,endIndent: 15,),
+                                  GestureDetector(
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 5),
+                                      child: ListTile(
+                                        dense: true,
+                                        title: Text('Cadence (steps/min)',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 16
+                                          ),
+                                        ),
+                                        trailing: IconButton(
+                                            icon: Icon(_viewCadence ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+                                            color: Colors.black,
+                                            splashRadius: 28,
+                                            onPressed: (){
+                                              setState(() {
+                                                _viewCadence = !_viewCadence;
+                                              });
+                                            }),
+                                      ),
+                                    ),
+                                    onTap: (){
+                                      setState(() {
+                                        _viewCadence = !_viewCadence;
+                                      });
+                                    },
+                                  ),
+                                  Visibility(
+                                      visible: _viewCadence,
+                                      child: CadenceGraph(document: documents)
                                   ),
                                   Divider(height: 2, color: Colors.grey,indent: 15,endIndent: 15,),
                                   GestureDetector(

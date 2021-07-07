@@ -29,6 +29,7 @@ class _DeviceWithAvailability extends BluetoothDevice {
 //modal
 
 var _bpmChoice = 49;
+var _trainingDuration = 10;
 
 class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with WidgetsBindingObserver {
   List<_DeviceWithAvailability> devices = List<_DeviceWithAvailability>();
@@ -196,120 +197,180 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
       ),
       backgroundColor: Color(0xFFFF1EEEE),
       body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-              child: Text("BPM setting",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 16,
-                  color:Colors.grey,
-                  fontWeight: FontWeight.w500,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                child: Text("BPM setting",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color:Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-            ListTile(
-              title: const Text('49 BPM'),
-              leading: Radio(
-                value: 49,
-                groupValue: _bpmChoice,
-                onChanged: (value) {
-                  setState(() {
-                    _bpmChoice = value;
-                    print(_bpmChoice);
-                  });
-                },
-                activeColor: Colors.teal[300],
-              ),
-            ),
-            ListTile(
-              title: const Text('55 BPM'),
-              leading: Radio(
-                value: 55,
-                groupValue: _bpmChoice,
-                onChanged: (value) {
-                  setState(() {
-                    _bpmChoice = value;
-                    print(_bpmChoice);
-                  });
-                },
-                activeColor: Colors.teal[300],
-              ),
-            ),
-            ListTile(
-              title: const Text('60 BPM'),
-              leading: Radio(
-                value: 60,
-                groupValue: _bpmChoice,
-                onChanged: (value) {
-                  setState(() {
-                    _bpmChoice = value;
-                    print(_bpmChoice);
-                  });
-                },
-                activeColor: Colors.teal[300],
-              ),
-            ),
-            Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
-            SwitchListTile(
-                title: Text("Enable Bluetooth"),
-                value: _bluetoothState.isEnabled,
-                onChanged: (bool value){
-                  future() async{
-                    if(value){
-                      await FlutterBluetoothSerial.instance.requestEnable();
-                    } else{
-                      await FlutterBluetoothSerial.instance.requestDisable();
-                    }
-                    future().then((_){
-                      setState(() {
-
-                      });
+              ListTile(
+                title: const Text('49 BPM'),
+                leading: Radio(
+                  value: 49,
+                  groupValue: _bpmChoice,
+                  onChanged: (value) {
+                    setState(() {
+                      _bpmChoice = value;
+                      print(_bpmChoice);
                     });
-                  }
-                }
-            ),
-            ListTile(
-              title: Text("Bluetooth Status"),
-              subtitle: Text(_bluetoothState.toString()),
-              trailing: IconButton(
-                color: Colors.grey,
-                icon: Icon(Icons.settings),
-                onPressed: (){
-                  FlutterBluetoothSerial.instance.openSettings();
-                },
-              ),
-            ),
-            //VerticalDivider(thickness: 2,color: Colors.black,),
-            Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-              child: Text("Select device",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 16,
-                  color:Colors.grey,
-                  fontWeight: FontWeight.w500,
+                  },
+                  activeColor: Colors.teal[300],
                 ),
               ),
-            ),
-            Expanded(
-              child: list.isEmpty
-                  ? Container(
-                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-                      child: Text("No connected devices",
-                        style: TextStyle(
-                          color:Colors.grey,
-                        ),
-                      ),
-                    )
-                  : ListView(children: list),
-            ),
-          ],
-        ),
+              ListTile(
+                title: const Text('55 BPM'),
+                leading: Radio(
+                  value: 55,
+                  groupValue: _bpmChoice,
+                  onChanged: (value) {
+                    setState(() {
+                      _bpmChoice = value;
+                      print(_bpmChoice);
+                    });
+                  },
+                  activeColor: Colors.teal[300],
+                ),
+              ),
+              ListTile(
+                title: const Text('60 BPM'),
+                leading: Radio(
+                  value: 60,
+                  groupValue: _bpmChoice,
+                  onChanged: (value) {
+                    setState(() {
+                      _bpmChoice = value;
+                      print(_bpmChoice);
+                    });
+                  },
+                  activeColor: Colors.teal[300],
+                ),
+              ),
+
+              Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
+
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                child: Text("Duration setting",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color:Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: const Text('10 minutes'),
+                leading: Radio(
+                  value: 10,
+                  groupValue: _bpmChoice,
+                  onChanged: (value) {
+                    setState(() {
+                      _trainingDuration = value;
+                      print(_trainingDuration);
+                    });
+                  },
+                  activeColor: Colors.teal[300],
+                ),
+              ),
+              ListTile(
+                title: const Text('15 minutes'),
+                leading: Radio(
+                  value: 15,
+                  groupValue: _trainingDuration,
+                  onChanged: (value) {
+                    setState(() {
+                      _trainingDuration = value;
+                      print(_trainingDuration);
+                    });
+                  },
+                  activeColor: Colors.teal[300],
+                ),
+              ),
+              ListTile(
+                title: const Text('20 minutes'),
+                leading: Radio(
+                  value: 20,
+                  groupValue: _trainingDuration,
+                  onChanged: (value) {
+                    setState(() {
+                      _trainingDuration = value;
+                      print(_trainingDuration);
+                    });
+                  },
+                  activeColor: Colors.teal[300],
+                ),
+              ),
+              Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
+              SwitchListTile(
+                  title: Text("Enable Bluetooth"),
+                  value: _bluetoothState.isEnabled,
+                  onChanged: (bool value){
+                    future() async{
+                      if(value){
+                        await FlutterBluetoothSerial.instance.requestEnable();
+                      } else{
+                        await FlutterBluetoothSerial.instance.requestDisable();
+                      }
+                      future().then((_){
+                        setState(() {
+
+                        });
+                      });
+                    }
+                  }
+              ),
+              ListTile(
+                title: Text("Bluetooth Status"),
+                subtitle: Text(_bluetoothState.toString()),
+                trailing: IconButton(
+                  color: Colors.grey,
+                  icon: Icon(Icons.settings),
+                  onPressed: (){
+                    FlutterBluetoothSerial.instance.openSettings();
+                  },
+                ),
+              ),
+              //VerticalDivider(thickness: 2,color: Colors.black,),
+              Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                child: Text("Select device",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color:Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: list.isEmpty
+                    ? Container(
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                  child: Text("No connected devices",
+                    style: TextStyle(
+                      color:Colors.grey,
+                    ),
+                  ),
+                )
+                    : ListView(children: list),
+              ),
+            ],
+          ),
+        )
+
       ),
 
     );

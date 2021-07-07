@@ -1,3 +1,5 @@
+//import 'dart:html';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,7 +9,8 @@ import 'package:date_time_format/date_time_format.dart';
 import 'dart:math';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:gait_assessment/SelectBondedDevicePage.dart';
+//import 'package:gait_assessment/SelectBondedDevicePage.dart';
+//import 'package:gait_assessment/SelectBondedDevicePage.dart' as options;
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:gait_assessment/bt_dataentry.dart';
 import 'package:gait_assessment/BluetoothDeviceListEntry.dart';
@@ -24,6 +27,9 @@ user_id(){
   print(uid);
   return uid;
 }
+
+var _bpmChoice = 49;
+var _trainingDuration = 10;
 
 class TrainingScreen extends StatelessWidget {
   @override
@@ -63,7 +69,6 @@ class TrainingScreen extends StatelessWidget {
         //    );
         //  },
         ),
-        
       //),
     );
   }
@@ -344,11 +349,13 @@ class _TrainingProgressState extends State<TrainingProgress> {
 
   String localFilePath;
   bool _endTraining = false;
+  bool _sendChecker = false;
+
   signalEndTraining(){
     if(_position.inSeconds.ceil() == 0){
       _endTraining = false;
     }
-    else if(_position.inSeconds.ceil() >= _duration.inSeconds.ceil() - 1 ){
+    else if(_position.inSeconds.ceil() >= _duration.inSeconds.ceil() - 3 ){
       _endTraining = true;
     } else{
       _endTraining = false;
@@ -459,6 +466,7 @@ class _TrainingProgressState extends State<TrainingProgress> {
   @override
   Widget build(BuildContext context) {
     var insert_data;
+    var countdown = "";
 
     training_id (DocumentReference doc){
       insert_data = doc.id.toString();
@@ -476,14 +484,12 @@ class _TrainingProgressState extends State<TrainingProgress> {
         ),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.settings),
+              icon: Icon(Icons.info_outline_rounded),
               onPressed: () async {
-                /*Navigator.push(context,
-                //MaterialPageRoute(builder: (context) => SettingsScreen()),
-                //MaterialPageRoute(builder: (context)=>SelectBondedDevicePage()),
-                  MaterialPageRoute(builder: (context)=>BluetoothApp()),
-                );*/
-                selectedDevice =
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (context)=>Instructions()),
+                );
+                /*selectedDevice =
                     await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) {
@@ -491,14 +497,14 @@ class _TrainingProgressState extends State<TrainingProgress> {
                           return SelectBondedDevicePage(checkAvailability: false);
                         },
                       ),
-                    );
+                    );*/
                 //if what the list page returns is null, it doesnt go to the page
-                if (selectedDevice != null) {
-                  print('Connect -> selected ' + selectedDevice.address);
-                  _startChat(context, selectedDevice);
-                } else {
-                  print('Connect -> no device selected');
-                }
+                //if (selectedDevice != null) {
+                //  print('Connect -> selected ' + selectedDevice.address);
+                //  _startChat(context, selectedDevice);
+                //} else {
+                //  print('Connect -> no device selected');
+                //}
             }
           )
         ],
@@ -547,7 +553,13 @@ class _TrainingProgressState extends State<TrainingProgress> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 107),
                     child: IconButton(
-                      icon: Icon(isConnecting ? Icons.bluetooth_connected : _play? Icons.play_arrow_rounded : _endTraining? Icons.check_circle_rounded : Icons.stop_rounded),
+                      icon: Icon(isConnecting
+                          ? Icons.bluetooth_connected
+                          : _play
+                            ? Icons.play_arrow_rounded
+                            : _endTraining
+                              ? Icons.check_circle_rounded
+                              : Icons.stop_rounded),
                       onPressed: (){
                         setState(() {
                           if(isConnecting){
@@ -582,52 +594,63 @@ class _TrainingProgressState extends State<TrainingProgress> {
 
                             print(selectedDevice.name);
                             initBluetooth();
-                            print(_bpmChoice);
+                            //print(_bpmChoice);
                           }
 
                           if (isConnected){
                             print(selectedDevice.name);
-                            print(_bpmChoice);
+                            //print(_bpmChoice);
                             //insert sending data code
 
                             if(_play){
                               //insert sending data code
 
-                              Future.delayed(const Duration(milliseconds: 536), () {
-                                if(_bpmChoice == null || _trainingDuration == null){
-                                  _bpmChoice = 49;
-                                  _trainingDuration = 10;
-                                }
-                                audioCache.play('${_bpmChoice}'+'bpm_'+'${_trainingDuration}'+'min.mp3');
-                                //audioCache.play('49'+'bpm_'+'10'+'min.mp3');
-                                //audioCache.play('60'+'bpm_'+'1'+'min.mp3');
-                                //audioCache.play('metronome_test.mp3');
-                                //print('1/${_bpmChoice}/${_trainingDuration}');
-                                _sendMessage('1/${_bpmChoice}/${_trainingDuration}', selectedDevice);
-                                //_sendMessage('1/49/10', selectedDevice);
+                                countdown = "3";
+                                Future.delayed(const Duration(seconds: 1), (){
+                                  // count 3
+                                  countdown = "2";
+                                  Future.delayed(const Duration(seconds: 1), (){
+                                    // count 3
+                                    countdown = "1";
+                                    Future.delayed(const Duration(seconds: 1), (){
+                                      //audioCache.play('${_bpmChoice}'+'bpm_'+'${_trainingDuration}'+'min.mp3');
+                                      //count Start
+                                      countdown = "START!";
+                                      _sendMessage('1/${_bpmChoice}/${_trainingDuration}', selectedDevice);
+                                      Future.delayed(const Duration(milliseconds: 536), (){
+                                        //count Start
+                                        countdown = " ";
+                                        audioCache.play('${_bpmChoice}'+'bpm_'+'${_trainingDuration}'+'min.mp3');
+                                        _play = false;
+                                      });
+                                    });
+                                  });
+                                });
 
-                                _play = false;
 
-                              });
+
                             } else {
                                 if(_endTraining){
                                   _sendMessage("2", selectedDevice);
                                   var uid = user_id();
+                                  _sendChecker = true;
 
                                   if(jsonData != null){
                                     return showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
                                         title: Text("Finished training"),
-                                        content: Text("Here are your results:\nTotal Steps:${jsonData['total_steps'].toInt()}\nCorrect Steps:${jsonData['correct_steps'].toInt()}\nWrong Steps:${jsonData['wrong_steps'].toInt()}\nCadence: ${jsonData['cadence']}\nAve Step Time: ${jsonData['ave_step_time']}"),
+                                        content: Text("Here are your results:\nTotal Steps:${jsonData['total_steps'].toInt()}\nCorrect Steps:${jsonData['correct_steps'].toInt()}\nWrong Steps:${jsonData['wrong_steps'].toInt()}\nCadence: ${jsonData['cadence']}"),
+                                        //content: Text("Here are your results:\nTotal Steps:${jsonData['total_steps'].toInt()}\nCorrect Steps:${jsonData['correct_steps'].toInt()}\nWrong Steps:${jsonData['wrong_steps'].toInt()}\nCadence: ${jsonData['cadence']}\nAve Step Time: ${jsonData['ave_step_time']}"),
+
                                         actions: <Widget>[
                                           TextButton(
                                             onPressed: () async {
-                                              Navigator.of(context).pop();
-                                              selectedDevice =
-                                              await Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) {
+                                              //Navigator.of(context).pop();
+                                              //selectedDevice =
+                                              //await Navigator.of(context).push(
+                                                //MaterialPageRoute(
+                                                  //builder: (context) {
 
 
                                                     Map <String,dynamic> training_data= {
@@ -637,7 +660,9 @@ class _TrainingProgressState extends State<TrainingProgress> {
                                                       "correct_steps":jsonData['correct_steps'].toInt(),
                                                       "wrong_steps":jsonData['wrong_steps'].toInt(),
                                                       "cadence":jsonData['cadence'],
-                                                      "ave_step_time":jsonData['ave_step_time'].toInt(),
+                                                      //"ave_step_time":jsonData['ave_step_time'].toInt(),
+                                                      "bpm":_bpmChoice,
+                                                      "duration":_trainingDuration
                                                     };
 
                                                     var training = FirebaseFirestore.instance.collection("users").doc(uid).collection("training");
@@ -682,12 +707,14 @@ class _TrainingProgressState extends State<TrainingProgress> {
 
 
                                                     Future.delayed(const Duration(seconds: 1), () {
-                                                      jsonData = '';
+                                                      jsonData = null;
                                                       Navigator.of(context).pop();
+                                                      _sendChecker = false;
+
                                                     });
-                                                  },
-                                                ),
-                                              );
+                                                  //},
+                                                //),
+                                              //);
                                             },
                                             child: Text("Finish",
                                               style: TextStyle(color: Colors.teal[300]),),
@@ -696,10 +723,114 @@ class _TrainingProgressState extends State<TrainingProgress> {
                                       ),
                                     );
                                   }
-                                } else {
+                                }
+
+                                /*if(_endTraining){
+                                  _sendMessage("2", selectedDevice);
+                                  var uid = user_id();
+                                  Future.delayed(const Duration(seconds: 2), (){
+
+                                    return showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: Text("Here are your results"),
+                                        content: (jsonData != null)
+                                            ? Text("BPM:${jsonData['bpm'].toInt()}\nTotal Steps:${jsonData['total_steps'].toInt()}\nCorrect Steps:${jsonData['correct_steps'].toInt()}\nWrong Steps:${jsonData['wrong_steps'].toInt()}\nCadence: ${jsonData['cadence'].toDouble()}\nAve Step Time: ${jsonData['ave_step_time'].toDouble()}")
+                                            : Text("BPM: 0\nTotal Steps: 0\nCorrect Steps: 0\nWrong Steps: 0 \nCadence: 0\nAve Step Time: 0"),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: Text("Finish",
+                                              style: TextStyle(color: Colors.teal[300]),),
+                                            onPressed: () async {
+                                              Map <String, dynamic> training_data = {
+                                                "date": DateTime.now(),
+                                                "user_id": uid,
+                                                "total_steps": jsonData['total_steps'].toInt(),
+                                                "correct_steps": jsonData['correct_steps'].toInt(),
+                                                "wrong_steps": jsonData['wrong_steps'].toInt(),
+                                                "cadence": jsonData['cadence'].toDouble(),
+                                                "ave_step_time": jsonData['ave_step_time'].toDouble(),
+                                                "bpm": jsonData['bpm'].toInt(),
+                                              };
+                                              var training = FirebaseFirestore
+                                                  .instance.collection(
+                                                  "users")
+                                                  .doc(uid)
+                                                  .collection("training");
+
+                                              training.add(training_data).then((value) async {
+                                                //print("This is the data ${value.path}");
+                                                Map <String,
+                                                    dynamic> feedback = {
+                                                  "date": DateTime.now(),
+                                                  "patient_id": uid,
+                                                  "therapist_id": "",
+                                                  "therapist_name": "",
+                                                  "parent_id": value.id,
+                                                  //shows the thread sequencing
+                                                  "session_id": value.id,
+                                                  //shows the training session associated with
+                                                  "content": "",
+                                                };
+                                                FirebaseFirestore.instance
+                                                    .collection("users").doc(
+                                                    uid).collection(
+                                                    "feedback")
+                                                    .doc(value.id)
+                                                    .set(feedback);
+
+                                                //print("SCHED DOC: ${docSched}");
+                                                Map <String,
+                                                    dynamic> updatedData = {
+                                                  "date_completed": DateTime
+                                                      .now(),
+                                                  "bpm": _bpmChoice,
+                                                  //shows the thread sequencing
+                                                  //"therapist_id": auth.currentUser.uid,
+                                                  "done": true
+                                                };
+
+                                                  var reference = docSched
+                                                      .toString();
+                                                  var path = "";
+                                                  print(
+                                                      "REFERENCE: ${reference}");
+                                                  //DocumentReference(schedule/9wHBm4kVpsBFRc1lZQqA)
+
+                                                  for (var i = 27; i <
+                                                      reference.length -
+                                                          1; i++) {
+                                                    path = path +
+                                                        reference[i].toString();
+                                                  }
+                                                  print('PATH: ${path}');
+
+                                                  FirebaseFirestore.instance
+                                                      .collection("schedule")
+                                                      .doc(path)
+                                                      .set(updatedData);
+                                                  jsonData = '';
+                                                  Navigator.of(context).pop();
+
+
+                                                });
+
+                                                //Navigator.of(context).pop();
+
+                                            }
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  });
+
+
+                                }
+                                */
+                                else {
                                   advancedPlayer.stop();
                                   _play = true;
-                                  _sendMessage("2", selectedDevice);
+                                  _sendMessage("3", selectedDevice);
                                 }
                             }
                           }
@@ -716,6 +847,12 @@ class _TrainingProgressState extends State<TrainingProgress> {
             )
           ),
           SizedBox(height: 50,),
+          Center(
+            child: Text(countdown,
+              style: TextStyle(color: Colors.teal[300],  fontSize: 30, fontWeight: FontWeight.w500)
+            )
+          ),
+          SizedBox(height: 50,),
           Center(child: ((selectedDevice != null)
             ? isConnecting
               ? Text('Connecting to ' + selectedDevice.name + '...',
@@ -724,53 +861,17 @@ class _TrainingProgressState extends State<TrainingProgress> {
                 ? _endTraining
                   ? Text('Completed session',
                     style: TextStyle(color: Colors.grey[500]))
-                  : Text('Ongoing session',
-                    style: TextStyle(color: Colors.grey[500]))
+                  : (_sendChecker)
+                    ? Text('Receiving data...\nPlease press the check button after 2 seconds.',
+                      style: TextStyle(color: Colors.grey[500]))
+                    :  Text('Ongoing session',
+                      style: TextStyle(color: Colors.grey[500]))
+
               : Text('Disconnected from device',
                 style: TextStyle(color: Colors.grey[500]))
             : Text('Disconnected',
               style: TextStyle(color: Colors.grey[500]))
           )),
-          Center(
-            child: StreamBuilder(
-                stream: FirebaseFirestore.instance.collection('schedule')
-                    .where('user_id', isEqualTo: user_id())
-                    //.where('date', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(days: 1)))
-                    .where('done', isEqualTo: false)
-                    .orderBy('date', descending: false).snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    //return Text("...");
-                    return Text(" ");
-
-                  } else if(snapshot.hasData){
-
-                    final document = snapshot.data.docs;
-                    _bpmChoice = document[0]['bpm'];
-                    _trainingDuration = document[0]['duration'];
-                    docSched = document[0].reference.id;
-                    if(_endTraining){
-                      if(document == null){
-
-                      } else {
-                        Map <String,dynamic> updatedData = {
-                          "date_completed": DateTime.now(),
-                          "bpm": _bpmChoice,      //shows the thread sequencing
-                          //"therapist_id": auth.currentUser.uid,
-                          //"done": widget.event_doc[widget.index]['done']
-                        };
-                      }
-
-                    }
-                    //return Text("${_bpmChoice} | ${_trainingDuration}");
-                    return Text(" ");
-
-
-                  }
-                }
-
-            ),
-          )
 
         ],
 
@@ -793,8 +894,8 @@ class SelectBondedDevicePage extends StatefulWidget {
   _SelectBondedDevicePage createState() => new _SelectBondedDevicePage();
 }
 //modal
-var _bpmChoice;
-var _trainingDuration;
+//var _bpmChoice;
+//var _trainingDuration;
 var docSched;
 class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with WidgetsBindingObserver {
   List<_DeviceWithAvailability> devices = List<_DeviceWithAvailability>();
@@ -936,7 +1037,7 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bluetooth settings',
+        title: Text('Training settings',
           style: TextStyle(color: Colors.teal[300],),),
         actions: <Widget>[
           _isDiscovering
@@ -964,11 +1065,11 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
       ),
       backgroundColor: Color(0xFFFF1EEEE),
       body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          //mainAxisAlignment: MainAxisAlignment.start,
+          //crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            /*Container(
+            Container(
               padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
               child: Text("BPM setting",
                 textAlign: TextAlign.left,
@@ -992,6 +1093,11 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
                 },
                 activeColor: Colors.teal[300],
               ),
+              onTap: (){
+                setState(() {
+                  _bpmChoice = 49;
+                });
+              },
             ),
             ListTile(
               title: const Text('55 BPM'),
@@ -1006,6 +1112,11 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
                 },
                 activeColor: Colors.teal[300],
               ),
+              onTap: (){
+                setState(() {
+                  _bpmChoice = 55;
+                });
+              },
             ),
             ListTile(
               title: const Text('60 BPM'),
@@ -1020,8 +1131,101 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
                 },
                 activeColor: Colors.teal[300],
               ),
+              onTap: (){
+                setState(() {
+                  _bpmChoice = 60;
+                });
+              },
             ),
-            Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),*/
+            Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+              child: Text("Duration setting",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  color:Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            ListTile(
+              title: const Text('1 minute (for testing)'),
+              leading: Radio(
+                value: 1,
+                groupValue: _trainingDuration,
+                onChanged: (value) {
+                  setState(() {
+                    _trainingDuration = value;
+                    print(_trainingDuration);
+                  });
+                },
+                activeColor: Colors.teal[300],
+              ),
+              onTap: (){
+                setState(() {
+                  _trainingDuration = 1;
+                });
+              },
+            ),
+            ListTile(
+              title: const Text('10 minutes'),
+              leading: Radio(
+                value: 10,
+                groupValue: _trainingDuration,
+                onChanged: (value) {
+                  setState(() {
+                    _trainingDuration = value;
+                    print(_trainingDuration);
+                  });
+                },
+                activeColor: Colors.teal[300],
+              ),
+              onTap: (){
+                setState(() {
+                  _trainingDuration = 10;
+                });
+              },
+            ),
+            ListTile(
+              title: const Text('15 minutes'),
+              leading: Radio(
+                value: 15,
+                groupValue: _trainingDuration,
+                onChanged: (value) {
+                  setState(() {
+                    _trainingDuration = value;
+                    print(_trainingDuration);
+                  });
+                },
+                activeColor: Colors.teal[300],
+              ),
+              onTap: (){
+                setState(() {
+                  _trainingDuration = 15;
+                });
+              },
+            ),
+            ListTile(
+              title: const Text('20 minutes'),
+              leading: Radio(
+                value: 20,
+                groupValue: _trainingDuration,
+                onChanged: (value) {
+                  setState(() {
+                    _trainingDuration = value;
+                    print(_trainingDuration);
+                  });
+                },
+                activeColor: Colors.teal[300],
+              ),
+              onTap: (){
+                setState(() {
+                  _trainingDuration = 20;
+                });
+              },
+            ),
+            Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
             SwitchListTile(
                 title: Text("Enable Bluetooth"),
                 value: _bluetoothState.isEnabled,
@@ -1045,7 +1249,7 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
               subtitle: Text(_bluetoothState.toString()),
               trailing: IconButton(
                 color: Colors.grey,
-                icon: Icon(Icons.info_outline_rounded),
+                icon: Icon(Icons.settings),
                 onPressed: (){
                   FlutterBluetoothSerial.instance.openSettings();
                 },
@@ -1053,6 +1257,7 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
             ),
             //VerticalDivider(thickness: 2,color: Colors.black,),
             Divider(thickness: 1, color: Colors.grey[300], indent: 15,endIndent: 15,),
+
             Container(
               padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
               child: Text("Select your device",
@@ -1064,7 +1269,7 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
                 ),
               ),
             ),
-            Expanded(
+            Container(
               child: list.isEmpty
                   ? Container(
                 padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
@@ -1074,11 +1279,125 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> with Widgets
                   ),
                 ),
               )
-                  : ListView(children: list),
+                  : Column(children: list),
             ),
+            SizedBox(height: 100)
           ],
         ),
       ),
+    );
+  }
+}
+
+
+
+////////////////////////////////////
+
+class Instructions extends StatefulWidget {
+  @override
+  _InstructionsState createState() => _InstructionsState();
+}
+
+class _InstructionsState extends State<Instructions> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Training Instructions",
+          style: TextStyle(color: Colors.teal[300],),
+        ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios_rounded),
+          onPressed: () => Navigator.of(context).pop(),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(
+            color: Colors.teal[300]
+          ),
+        ),
+        backgroundColor: Color(0xFFFF1EEEE),
+
+        body: Container(
+          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 25),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                child: Text("1. Connect Bluetooth",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color:Colors.blueGrey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: const Text('Press the Bluetooth button on the training screen. Connect by pressing Settings on the pop up.'),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                child: Text("2. Select your training options (BPM and Duration)",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color:Colors.blueGrey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: const Text('Choose from the options for BPM and Duration. Default options are 49 BPM and 10 minutes'),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                child: Text("3. Select the insole device 'HC-06'",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color:Colors.blueGrey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: const Text('You will be redirected back to the mainscreen. Wait for status to be Connected.'),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                child: Text("4. Start walking",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color:Colors.blueGrey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: const Text('Start after the countdown'),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                child: Text("5. End training by pressing the check",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color:Colors.blueGrey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              ListTile(
+                title: const Text("You will see your training results on a popup. Press 'Finish' to go back to the mainscreen."),
+              ),
+            ],
+          ),
+        )
+
     );
   }
 }

@@ -109,7 +109,7 @@ class _ScheduleStaffState extends State<ScheduleStaff> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: StreamBuilder(
-                      stream: FirebaseFirestore.instance.collection('schedule').where('date', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(hours: 12))).orderBy('date', descending: true).snapshots(),
+                      stream: FirebaseFirestore.instance.collection('schedule').where('date', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(days: 2))).orderBy('date', descending: true).snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return Text("Loading");
@@ -127,7 +127,7 @@ class _ScheduleStaffState extends State<ScheduleStaff> {
                                     Timestamp t = event_doc[index]['date'];
                                     DateTime d = t.toDate();
                                     return ListTile(
-                                        title: Text("${d.format('F j')} | ${patientMap[ event_doc[index]['user_id'] ]}"),
+                                        title: Text("${d.format('F j')} | ${event_doc[index]['duration']} mins, ${event_doc[index]['bpm']} bpm\n${patientMap[ event_doc[index]['user_id'] ]}"),
                                         leading: Icon(event_doc[index]['done'] ? Icons.check_box_outlined : Icons.check_box_outline_blank_rounded, color: Colors.teal[300]),
                                         trailing: Row(
                                           mainAxisSize: MainAxisSize.min,
@@ -351,6 +351,24 @@ class _UpdateSessionState extends State<UpdateSession> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
+                ),
+                ListTile(
+                  title: const Text('1 minute (for testing)'),
+                  leading: Radio(
+                    value: 1,
+                    groupValue: selectedDuration,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedDuration = value;
+                      });
+                    },
+                    activeColor: Colors.teal[300],
+                  ),
+                  onTap: (){
+                    setState(() {
+                      selectedDuration = 10;
+                    });
+                  },
                 ),
                 ListTile(
                   title: const Text('10 minutes'),

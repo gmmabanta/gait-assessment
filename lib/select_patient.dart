@@ -211,7 +211,7 @@ class _DetailPatientState extends State<DetailPatient> {
                                 itemCount: documents.length,
                                 shrinkWrap: true,
                                 itemBuilder: (context, index){
-                                  ave_step_time = documents[index]['ave_step_time'];
+                                  //ave_step_time = documents[index]['ave_step_time'];
                                   cadence = documents[index]['cadence'];
                                   total_steps = documents[index]['total_steps'];
                                   correct_steps = documents[index]['correct_steps'];

@@ -2,10 +2,10 @@
     package="com.maemabanta.gait_assessment">
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!--<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>-->
 
     <application
-        android:label="gait_assessment"
+        android:label="Walk Assessment"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
