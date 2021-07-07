@@ -42,7 +42,7 @@ Minimum requirement: ```Android v8.0 (Android Oreo)```
 
 # Usage
 
-## Packages
+## Plugins
 
 Plugins are shown in pubspec.yaml file. A list of the plugins and their uses are summarized below:
 
