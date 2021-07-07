@@ -2,24 +2,13 @@
 
 This is an application to assess the walking abilities of Parkinson's Disease patients. It uses rhythmic auditory stimulation to guide PD patients to make big and loud steps. The application connects to a Bluetooth device to log training results.
 
-# How to Install the Project
-
-
-# How to Use the Project
-
-# Languages and Tools
-
-
 # Demo Preview
 
-| Patient App  | Therapist App |
+| Patient App Menu | Therapist App Menu |
 | ------------- | ------------- |
-| <img src="/readme-images/Menu-Patient.jpg" width="200"> | <img src="/readme-images/Menu-Patient.jpg" width="200">  |
-| Content Cell  | Content Cell  |
+| <img src="/readme-images/Menu-Patient.jpg" width="200"> | <img src="/readme-images/Menu-Therapist.jpg" width="200">  |
 
 # Table of contents
-
-<!-- After you have introduced your project, it is a good idea to add a **Table of contents** or **TOC** as **cool** people say it. This would make it easier for people to navigate through your README and find exactly what they are looking for.
 
 - [Project Title](#project-title)
 - [Demo-Preview](#demo-preview)
@@ -28,7 +17,7 @@ This is an application to assess the walking abilities of Parkinson's Disease pa
 - [Usage](#usage)
 - [Development](#development)
 - [License](#license)
-- [Footer](#footer)
+<!-- - [Footer](#footer) -->
 
 # Installation
 [(Back to top)](#table-of-contents)
@@ -52,6 +41,9 @@ To use this project, first clone the repo on your device using the command below
 ```git clone https://github.com/navendu-pottekkat/nsfw-filter.git``` -->
 
 # Usage
+
+## Languages and Tools
+
 [(Back to top)](#table-of-contents)
 
 <!-- This is optional and it is used to give the user info on how to use the project after installation. This could be added in the Installation section also. -->
