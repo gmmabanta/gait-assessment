@@ -12,9 +12,9 @@ This is an application to assess the walking abilities of Parkinson's Disease pa
 
 # Demo Preview
 
-| First Header  | Second Header |
+| Patient App  | Therapist App |
 | ------------- | ------------- |
-| ![Menu - Patient](/readme-images/Menu-Patient.jpg =250x)  | Content Cell  |
+| <img src="/readme-images/Menu-Patient.jpg" width="200"> | <img src="/readme-images/Menu-Patient.jpg" width="200">  |
 | Content Cell  | Content Cell  |
 
 # Table of contents
