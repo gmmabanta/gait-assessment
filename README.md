@@ -50,6 +50,15 @@ Plugins are shown in pubspec.yaml file. A list of the plugins and their uses are
 | ------------- | ------------- |
 | [flutter_bluetooth_serial](https://pub.dev/packages/flutter_bluetooth_serial)  | Implementation of Bluetooth on the device  |
 | [audioplayers](https://pub.dev/packages/audioplayers)  | Plays local audio files from the application  |
+| [table_calendar](https://pub.dev/packages/table_calendar)  | Displays calendar widget with calendar-spcific buttons|
+| [firebase_dynamic_links](https://pub.dev/packages?q=firebase_dynamic_links)  | Google Dynamic Links for Firebase, an app solution for creating and handling links across multiple platforms|
+| [firebase_auth](https://pub.dev/packages/firebase_auth)  | Firebase authentication for signin and login with email and password |
+| [firebase_core](https://pub.dev/packages/firebase_core)  | Utilizes Firebase Core API to use Firebase apps |
+| [cloud_firestore](https://pub.dev/packages/cloud_firestore)  | Firestore for live synchronization and offline support on the app  |
+| [date_time_format](https://pub.dev/packages/date_time_format) | Formatting date and time for uniform formatting|
+| [syncfusion_flutter_gauges](https://pub.dev/packages/syncfusion_flutter_gauges) | Utilizes radial gauge for the progress bar of the training screen |
+| [fl_chart](https://pub.dev/packages/fl_chart) | Displays bar chart and line chart to show results |
+| [cupertino_icons](https://pub.dev/packages/cupertino_icons) | Fonts and icons assets for the app |
 
 
 ## Languages and Tools
@@ -59,14 +68,3 @@ Plugins are shown in pubspec.yaml file. A list of the plugins and their uses are
 [(Back to top)](#table-of-contents)
 
 <!-- This is optional and it is used to give the user info on how to use the project after installation. This could be added in the Installation section also. -->
-
-# Development
-[(Back to top)](#table-of-contents)
-
-<!-- This is the place where you give instructions to developers on how to modify the code.
-
-You could give **instructions in depth** of **how the code works** and how everything is put together.
-
-You could also give specific instructions to how they can setup their development environment.
-
-Ideally, you should keep the README simple. If you need to add more complex explanations, use a wiki. Check out [this wiki](https://github.com/navendu-pottekkat/nsfw-filter/wiki) for inspiration. -->
