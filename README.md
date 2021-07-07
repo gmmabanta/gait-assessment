@@ -18,8 +18,8 @@ Collaborators: Mae Mabanta and Stephen Destura
 - [Demo Preview](#demo-preview)
 - [Table of Contents](#table-of-contents)
 - [Installation](#installation)
-- [Usage](#usage)
 - [Development](#development)
+
 
 
 # Installation
@@ -40,7 +40,7 @@ Minimum requirement: ```Android v8.0 (Android Oreo)```
 
 
 
-# Usage
+# Development
 
 ## Plugins
 
