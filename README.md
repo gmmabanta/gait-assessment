@@ -2,25 +2,39 @@
 
 This is an application to assess the walking abilities of Parkinson's Disease patients. It uses rhythmic auditory stimulation to guide PD patients to make big and loud steps. The application connects to a Bluetooth device to log training results.
 
+Collaborators: Mae Mabanta and Stephen Destura
+
 # Demo Preview
 
 | Patient App Menu | Therapist App Menu |
 | ------------- | ------------- |
 | <img src="/readme-images/Menu-Patient.jpg" width="200"> | <img src="/readme-images/Menu-Therapist.jpg" width="200">  |
+| The Patient App is able to Start Training sessions with the use of Bluetooth and local audio files, View Schedules, and View Training Results.| The Therapist App is able to Select Patients and View Schedule. By the Select Patient function, they can see all patients' training results and provide feedback per session. |
 
-# Table of contents
+# Table of Contents
 
-- [Project Title](#project-title)
-- [Demo-Preview](#demo-preview)
-- [Table of contents](#table-of-contents)
+- [Walk Assessment Application](#project-title)
+- [Demo Preview](#demo-preview)
+- [Table of Contents](#table-of-contents)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Development](#development)
-- [License](#license)
-<!-- - [Footer](#footer) -->
+
 
 # Installation
 [(Back to top)](#table-of-contents)
+
+## File Installation
+To use this project, first clone the repo on your device using the command below:
+
+```git init```
+
+```git clone https://github.com/gmmabanta/gait-assessment.git```
+
+## App APK Installation
+File is under ''/build/outputs/flutter-apk/app.apk''
+### Android Limitations
+Minimum requirement: Android v8.0 (Android Oreo)
 
 <!-- *You might have noticed the **Back to top** button(if not, please notice, it's right there!). This is a good idea because it makes your README **easy to navigate.***
 
@@ -85,27 +99,3 @@ You could also give guidelines for submitting and issue or a pull request to you
 Personally and by standard, you should use a [issue template](https://github.com/navendu-pottekkat/nsfw-filter/blob/master/ISSUE_TEMPLATE.md) and a [pull request template](https://github.com/navendu-pottekkat/nsfw-filter/blob/master/PULL_REQ_TEMPLATE.md)(click for examples) so that when a user opens a new issue they could easily format it as per your project guidelines.
 
 You could also add contact details for people to get in touch with you regarding your project. -->
-
-# License
-[(Back to top)](#table-of-contents)
-
-<!-- Adding the license to README is a good practice so that people can easily refer to it.
-
-Make sure you have added a LICENSE file in your project folder. **Shortcut:** Click add new file in your root of your repo in GitHub > Set file name to LICENSE > GitHub shows LICENSE templates > Choose the one that best suits your project!
-
-I personally add the name of the license and provide a link to it like below. -->
-
-[GNU General Public License version 3](https://opensource.org/licenses/GPL-3.0)
-
-# Footer
-[(Back to top)](#table-of-contents)
-
-<!-- Let's also add a footer because I love footers and also you **can** use this to convey important info.
-
-Let's make it an image because by now you have realised that multimedia in images == cool(*please notice the subtle programming joke). -->
-
-Leave a star in GitHub, give a clap in Medium and share this guide if you found this helpful.
-
-<!-- Add the footer here -->
-
-<!-- ![Footer](https://github.com/navendu-pottekkat/awesome-readme/blob/master/fooooooter.png) -->
