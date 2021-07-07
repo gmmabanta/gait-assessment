@@ -14,7 +14,7 @@ This is an application to assess the walking abilities of Parkinson's Disease pa
 
 | First Header  | Second Header |
 | ------------- | ------------- |
-| ![Menu - Patient](/readme-images/Menu-Patient.jpg)  | Content Cell  |
+| ![Menu - Patient](/readme-images/Menu-Patient.jpg =250x)  | Content Cell  |
 | Content Cell  | Content Cell  |
 
 # Table of contents
