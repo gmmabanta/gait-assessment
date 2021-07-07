@@ -12,13 +12,7 @@ This is an application to assess the walking abilities of Parkinson's Disease pa
 
 # Demo-Preview
 
-<!-- Add a demo for your project -->
-
-<!-- After you have written about your project, it is a good idea to have a demo/preview(**video/gif/screenshots** are good options) of your project so that people can know what to expect in your project. You could also add the demo in the previous section with the product description.
-
-Here is a random GIF as a placeholder.
-
-![Random GIF](https://media.giphy.com/media/ZVik7pBtu9dNS/giphy.gif) -->
+![Training Screen](https://drive.google.com/file/d/135hls-NK8_iEfNvnvJW_-dCDOdAsZZU6/view?usp=sharing)
 
 # Table of contents
 
