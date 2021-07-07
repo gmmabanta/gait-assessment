@@ -6,10 +6,11 @@ Collaborators: Mae Mabanta and Stephen Destura
 
 # Demo Preview
 
-| Patient App Menu | Therapist App Menu |
+| Patient App Menu  | Therapist App Menu |
 | ------------- | ------------- |
-| <img src="/readme-images/Menu-Patient.jpg" width="200"> | <img src="/readme-images/Menu-Therapist.jpg" width="200">  |
-| The Patient App is able to Start Training sessions with the use of Bluetooth and local audio files, View Schedules, and View Training Results.| The Therapist App is able to Select Patients and View Schedule. By the Select Patient function, they can see all patients' training results and provide feedback per session. |
+| <img src="/readme-images/Menu-Patient.jpg" width="200">  | <img src="/readme-images/Menu-Therapist.jpg" width="200">  |
+| The Patient App is able to Start Training sessions with the use of Bluetooth and local audio files, View Schedules, and View Training Results.  | The Therapist App is able to Select Patients and View Schedule. By the Select Patient function, they can see all patients' training results and provide feedback per session.  |
+
 
 # Table of Contents
 
