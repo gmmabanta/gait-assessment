@@ -23,7 +23,6 @@ Collaborators: Mae Mabanta and Stephen Destura
 
 
 # Installation
-[(Back to top)](#table-of-contents)
 
 ## File Installation
 To use this project, first clone the repo on your device using the command below:
@@ -33,31 +32,20 @@ To use this project, first clone the repo on your device using the command below
 ```git clone https://github.com/gmmabanta/gait-assessment.git```
 
 ## App APK Installation
-File is under ''/build/outputs/flutter-apk/app.apk''
+Install APK File to your phone ```/build/outputs/flutter-apk/app.apk```
 ### Android Limitations
-Minimum requirement: Android v8.0 (Android Oreo)
+Minimum requirement: ```Android v8.0 (Android Oreo)```
 
-<!-- *You might have noticed the **Back to top** button(if not, please notice, it's right there!). This is a good idea because it makes your README **easy to navigate.***
+[(Back to top)](#table-of-contents)
 
-The first one should be how to install(how to generally use your project or set-up for editing in their machine).
 
-This should give the users a concrete idea with instructions on how they can use your project repo with all the steps.
-
-Following this steps, **they should be able to run this in their device.**
-
-A method I use is after completing the README, I go through the instructions from scratch and check if it is working. -->
-
-<!-- Here is a sample instruction:
-
-To use this project, first clone the repo on your device using the command below:
-
-```git init```
-
-```git clone https://github.com/navendu-pottekkat/nsfw-filter.git``` -->
 
 # Usage
 
 ## Languages and Tools
+
+<h3 align="left">Languages and Tools:</h3>
+<p align="left"> <a href="https://developer.android.com" target="_blank"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/android/android-original-wordmark.svg" alt="android" width="40" height="40"/> </a> <a href="https://www.figma.com/" target="_blank"> <img src="https://www.vectorlogo.zone/logos/figma/figma-icon.svg" alt="figma" width="40" height="40"/> </a> <a href="https://firebase.google.com/" target="_blank"> <img src="https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg" alt="firebase" width="40" height="40"/> </a> <a href="https://flutter.dev" target="_blank"> <img src="https://www.vectorlogo.zone/logos/flutterio/flutterio-icon.svg" alt="flutter" width="40" height="40"/> </a> </p>
 
 [(Back to top)](#table-of-contents)
 
